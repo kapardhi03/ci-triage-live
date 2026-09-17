@@ -24,3 +24,33 @@ There are two ways to be wrong, and they don't cost the same:
 
 Shipping a broken release is worse. When it's unclear, accept the internal cost of
 holding rather than risk the customer-facing failure.
+
+## Output space (phase 01)
+
+The system emits exactly one of four outputs per red build, plus a confidence level:
+
+| Output | Engineer action |
+|---|---|
+| real defect | hold the release, code review, get the change fixed |
+| flaky | rerun or quash the flake, lean toward shipping |
+| infrastructure | rerun on healthy infra, fix the runner, then proceed |
+| abstain | engineer investigates manually, then decides |
+
+ABSTAIN is derived, not assumed: it exists because sometimes the evidence is too thin to
+call any of the three causes, and guessing risks the expensive mistake.
+
+## Cost table (engineer-hours, guessed)
+
+| True cause | System output | What happens | Cost |
+|---|---|---|---|
+| any | correct confident call | just worked | ~0h |
+| real defect | flaky (wrong) | bug ships to customers | ~40h |
+| flaky | real defect (wrong) | hold and investigate for nothing | ~3h |
+| any | abstain | engineer investigates manually | ~1.5h |
+
+The table is asymmetric: false "flaky" is ~13x costlier than false "real defect."
+ABSTAIN is cheap but not free.
+
+## Objective
+
+Minimize total expected cost: sum of (frequency x cost) over all outcomes. Not accuracy.
