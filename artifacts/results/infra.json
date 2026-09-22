@@ -1,0 +1,72 @@
+{
+  "scope": "2 of 3 subset projects; NOT the 17-project reference. Numbers are not comparable to precomputed/.",
+  "source": "FlakeFlagger archives, Zenodo 4450723, CC-BY-4.0; fetched by scripts/fetch_archives.sh",
+  "mass_failure_threshold": 0.3,
+  "deterministic_threshold": 0.9,
+  "projects": {
+    "kevinsawicki-http-request": {
+      "runs": 7905,
+      "verdicts": {
+        "TRUSTED": 7905
+      },
+      "deterministic_tests_excluded": 0,
+      "distinct_failing_tests_all_runs": 15,
+      "distinct_failing_tests_trusted_runs": 15,
+      "tests_lost_to_gating": 0,
+      "example_reason_per_verdict": {
+        "TRUSTED": "1 module(s), 163 tests, 0 failed = 0.0%, below the 30% threshold"
+      }
+    },
+    "square-okhttp": {
+      "runs": 7908,
+      "verdicts": {
+        "TRUSTED": 7872,
+        "LOG_TRUNCATED": 36
+      },
+      "deterministic_tests_excluded": 102,
+      "distinct_failing_tests_all_runs": 202,
+      "distinct_failing_tests_trusted_runs": 202,
+      "tests_lost_to_gating": 0,
+      "example_reason_per_verdict": {
+        "TRUSTED": "5 module(s), 826 tests, 2 failed = 0.2%, below the 30% threshold (102 deterministic failure(s) excluded)",
+        "LOG_TRUNCATED": "no BUILD SUCCESS/FAILURE marker (14718 bytes read); the failure fraction is undefined without a total, and truncation cannot be distinguished from abnormal termination because both markers sit at the end of the log"
+      }
+    }
+  },
+  "headline": {
+    "question": "how many flaky labels were manufactured by runs that lied?",
+    "runs_gated_total": 15813,
+    "runs_rejected_total": 36,
+    "distinct_failing_tests_all_runs": 217,
+    "distinct_failing_tests_trusted_runs": 217,
+    "tests_lost_to_gating": 0,
+    "answer": "zero, in this subset. The 36 rejected runs reported 0 failing tests each -- they terminate early rather than marking unexecuted tests as failed."
+  },
+  "validation": {
+    "claim": "the gate's deterministic set, derived from maven.log text alone, equals the CSV's never-passing set (NumFailingRuns>0 and NumPassingRuns==0)",
+    "project": "square-okhttp",
+    "gate_found": 102,
+    "csv_found": 102,
+    "intersection": 102,
+    "gate_only": 0,
+    "csv_only": 0,
+    "jaccard": 1.0,
+    "why_it_matters": "the gate had no access to the CSV or the labels; an error in module summing, the failed-test regex or the nested-archive reader would have broken the match"
+  },
+  "prediction_recorded_before_the_run": {
+    "by": "builder, before square-okhttp was gated",
+    "predicted": {
+      "runs_rejected": 200,
+      "distinct_failing_all_runs": 300,
+      "distinct_failing_trusted_runs": 250,
+      "implied_gap": 50
+    },
+    "actual": {
+      "runs_rejected": 36,
+      "distinct_failing_all_runs": 202,
+      "distinct_failing_trusted_runs": 202,
+      "implied_gap": 0
+    },
+    "verdict": "refuted on all three. Kept unedited."
+  }
+}
