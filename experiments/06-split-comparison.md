@@ -79,3 +79,44 @@ numbers, not to `precomputed/`.
 ## Result
 
 *(appended after the run — empty at the time of prediction)*
+
+**Appended 2026-09-22 after the run. Nothing above this line was edited.**
+
+| | predicted | actual (21 features) |
+|---|---|---|
+| random 5-fold | 0.85 | **0.7621** ± 0.0127 |
+| leave-one-project-out | 0.65 | **0.6490** ± 0.1295 |
+| gap | 0.20 | **0.1131** |
+
+LOPO predicted within **0.001**. The random split was overestimated by 0.09, so the gap is
+about half what was predicted. Direction correct, magnitude wrong — and the error sits in
+the optimistic number, not the pessimistic one.
+
+**Unpredicted:** the random split's std is 0.0127 against LOPO's 0.1295. It reports a
+falsely *stable* number as well as a falsely high one. Fold-to-fold agreement under a random
+split comes from every fold containing the same projects; real cross-project performance
+varies enormously.
+
+## Refutation conditions, checked
+
+| # | Condition | Outcome |
+|---|---|---|
+| 1 | gap < 0.05 → base-rate memorisation not doing real work | **not met** — gap 0.1131 |
+| 2 | LOPO ≤ 0.50 → no transferable signal at all | **not met** — 0.6490 |
+| 3 | LOPO > random → direction refuted | **not met** — direction held |
+| 4 | gap survives removal of project-scale features → mechanism wrong | **not met — mechanism supported** |
+
+**Condition 4 in detail.** Dropping the 8 project-scale features shrank the gap from 0.1131
+to 0.0692, a 38.8% collapse. The shape is the fingerprint: the random split lost 0.005, LOPO
+gained **+0.039**. Features that help within a project and hurt across it are project
+identifiers in disguise.
+
+But **61% of the gap survives**. The stated mechanism is supported and incomplete: project
+identity also travels by a route not named in the prediction. Open, carried to phase 07.
+
+## Consequence
+
+Deployment is unseen projects, so the 8 features are dropped and phase 04's history-column
+decision is reversed. Final reported baseline on 13 features, leave-one-project-out:
+**AUC 0.6878 ± 0.1299** over 23 evaluable folds. Majority baseline: 96.84% accuracy, AUC
+0.500. See `decisions/06-split-choice.md` and `artifacts/results/baseline.json`.

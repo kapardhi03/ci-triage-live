@@ -1,0 +1,462 @@
+{
+  "scope": "25 projects from the full FlakeFlagger CSVs. NOT comparable to precomputed/ (17 projects).",
+  "deployment_answer": "unseen projects -- leave-one-project-out is the honest number",
+  "model": "LogisticRegression(max_iter=2000) on median-imputed, standardised features",
+  "data": {
+    "rows": 26134,
+    "positives": 825,
+    "n_features": 13,
+    "checksums": {
+      "Project_Info.csv": "5b3392a4f7367b2a566b919a98989a97",
+      "test_features.csv": "63306c05fafcc6446911ab7000f85ae0",
+      "test_results.csv": "fcd2674ab42068de627ec6afce4f6d1a"
+    }
+  },
+  "features": [
+    "assertion-roulette",
+    "conditional-test-logic",
+    "eager-test",
+    "fire-and-forget",
+    "indirect-testing",
+    "mystery-guest",
+    "resource-optimism",
+    "test-run-war",
+    "testLength",
+    "numAsserts",
+    "numCoveredLines",
+    "ExecutionTime",
+    "num_third_party_libs"
+  ],
+  "splits": {
+    "random_5fold": {
+      "split": "random_5fold",
+      "n_folds_evaluated": 5,
+      "n_folds_skipped": 0,
+      "mean_auc": 0.7569384714540303,
+      "std_auc": 0.009936067413824589,
+      "folds": [
+        {
+          "fold": 0,
+          "held_out": null,
+          "n_train": 20907,
+          "n_test": 5227,
+          "n_pos_test": 164,
+          "auc": 0.7395620065226922
+        },
+        {
+          "fold": 1,
+          "held_out": null,
+          "n_train": 20907,
+          "n_test": 5227,
+          "n_pos_test": 166,
+          "auc": 0.7650411962015222
+        },
+        {
+          "fold": 2,
+          "held_out": null,
+          "n_train": 20907,
+          "n_test": 5227,
+          "n_pos_test": 147,
+          "auc": 0.7633851572124912
+        },
+        {
+          "fold": 3,
+          "held_out": null,
+          "n_train": 20907,
+          "n_test": 5227,
+          "n_pos_test": 164,
+          "auc": 0.7646953266886017
+        },
+        {
+          "fold": 4,
+          "held_out": null,
+          "n_train": 20908,
+          "n_test": 5226,
+          "n_pos_test": 184,
+          "auc": 0.7520086706448441
+        }
+      ],
+      "skipped": [],
+      "run_id": "e6fd1819a6fe3c69"
+    },
+    "grouped_5fold": {
+      "split": "grouped_5fold",
+      "n_folds_evaluated": 5,
+      "n_folds_skipped": 0,
+      "mean_auc": 0.6030841324647355,
+      "std_auc": 0.14417448081152026,
+      "folds": [
+        {
+          "fold": 0,
+          "held_out": [
+            "assertj-core"
+          ],
+          "n_train": 19873,
+          "n_test": 6261,
+          "n_pos_test": 1,
+          "auc": 0.4544728434504792
+        },
+        {
+          "fold": 1,
+          "held_out": [
+            "ambari",
+            "commons-exec",
+            "elastic-job-lite",
+            "jackrabbit-oak",
+            "java-websocket"
+          ],
+          "n_train": 21154,
+          "n_test": 4980,
+          "n_pos_test": 93,
+          "auc": 0.8392333401541505
+        },
+        {
+          "fold": 2,
+          "held_out": [
+            "alluxio",
+            "handlebars.java",
+            "http-request",
+            "incubator-dubbo",
+            "logback",
+            "wro4j"
+          ],
+          "n_train": 21193,
+          "n_test": 4941,
+          "n_pos_test": 192,
+          "auc": 0.5997731978662175
+        },
+        {
+          "fold": 3,
+          "held_out": [
+            "hbase",
+            "hector",
+            "httpcore",
+            "ninja",
+            "spring-boot",
+            "wildfly"
+          ],
+          "n_train": 21179,
+          "n_test": 4955,
+          "n_pos_test": 387,
+          "auc": 0.6670875249460351
+        },
+        {
+          "fold": 4,
+          "held_out": [
+            "Achilles",
+            "activiti",
+            "jimfs",
+            "okhttp",
+            "orbit",
+            "undertow",
+            "zxing"
+          ],
+          "n_train": 21137,
+          "n_test": 4997,
+          "n_pos_test": 152,
+          "auc": 0.45485375590679483
+        }
+      ],
+      "skipped": [],
+      "run_id": "da3c34cfab49742f"
+    },
+    "leave_one_project_out": {
+      "split": "leave_one_project_out",
+      "n_folds_evaluated": 23,
+      "n_folds_skipped": 2,
+      "mean_auc": 0.6877785561311057,
+      "std_auc": 0.12985669643299458,
+      "folds": [
+        {
+          "fold": 0,
+          "held_out": [
+            "Achilles"
+          ],
+          "n_train": 24817,
+          "n_test": 1317,
+          "n_pos_test": 4,
+          "auc": 0.806930693069307
+        },
+        {
+          "fold": 1,
+          "held_out": [
+            "activiti"
+          ],
+          "n_train": 24090,
+          "n_test": 2044,
+          "n_pos_test": 32,
+          "auc": 0.7034511679920479
+        },
+        {
+          "fold": 2,
+          "held_out": [
+            "alluxio"
+          ],
+          "n_train": 25947,
+          "n_test": 187,
+          "n_pos_test": 116,
+          "auc": 0.6728994657600778
+        },
+        {
+          "fold": 3,
+          "held_out": [
+            "ambari"
+          ],
+          "n_train": 25810,
+          "n_test": 324,
+          "n_pos_test": 52,
+          "auc": 0.7637867647058824
+        },
+        {
+          "fold": 4,
+          "held_out": [
+            "assertj-core"
+          ],
+          "n_train": 19873,
+          "n_test": 6261,
+          "n_pos_test": 1,
+          "auc": 0.4544728434504792
+        },
+        {
+          "fold": 6,
+          "held_out": [
+            "elastic-job-lite"
+          ],
+          "n_train": 25576,
+          "n_test": 558,
+          "n_pos_test": 3,
+          "auc": 0.793993993993994
+        },
+        {
+          "fold": 7,
+          "held_out": [
+            "handlebars.java"
+          ],
+          "n_train": 25707,
+          "n_test": 427,
+          "n_pos_test": 1,
+          "auc": 0.8967136150234742
+        },
+        {
+          "fold": 8,
+          "held_out": [
+            "hbase"
+          ],
+          "n_train": 25703,
+          "n_test": 431,
+          "n_pos_test": 145,
+          "auc": 0.7153605015673982
+        },
+        {
+          "fold": 9,
+          "held_out": [
+            "hector"
+          ],
+          "n_train": 25992,
+          "n_test": 142,
+          "n_pos_test": 33,
+          "auc": 0.5713094245204338
+        },
+        {
+          "fold": 10,
+          "held_out": [
+            "http-request"
+          ],
+          "n_train": 25971,
+          "n_test": 163,
+          "n_pos_test": 18,
+          "auc": 0.7760536398467434
+        },
+        {
+          "fold": 11,
+          "held_out": [
+            "httpcore"
+          ],
+          "n_train": 25422,
+          "n_test": 712,
+          "n_pos_test": 22,
+          "auc": 0.8019104084321476
+        },
+        {
+          "fold": 12,
+          "held_out": [
+            "incubator-dubbo"
+          ],
+          "n_train": 23958,
+          "n_test": 2176,
+          "n_pos_test": 19,
+          "auc": 0.6219896054461606
+        },
+        {
+          "fold": 13,
+          "held_out": [
+            "jackrabbit-oak"
+          ],
+          "n_train": 22236,
+          "n_test": 3898,
+          "n_pos_test": 15,
+          "auc": 0.7123701605288009
+        },
+        {
+          "fold": 14,
+          "held_out": [
+            "java-websocket"
+          ],
+          "n_train": 25989,
+          "n_test": 145,
+          "n_pos_test": 23,
+          "auc": 0.7957947255880257
+        },
+        {
+          "fold": 16,
+          "held_out": [
+            "logback"
+          ],
+          "n_train": 25291,
+          "n_test": 843,
+          "n_pos_test": 22,
+          "auc": 0.6837836341490422
+        },
+        {
+          "fold": 17,
+          "held_out": [
+            "ninja"
+          ],
+          "n_train": 25827,
+          "n_test": 307,
+          "n_pos_test": 1,
+          "auc": 0.8398692810457516
+        },
+        {
+          "fold": 18,
+          "held_out": [
+            "okhttp"
+          ],
+          "n_train": 25324,
+          "n_test": 810,
+          "n_pos_test": 100,
+          "auc": 0.3687394366197183
+        },
+        {
+          "fold": 19,
+          "held_out": [
+            "orbit"
+          ],
+          "n_train": 26048,
+          "n_test": 86,
+          "n_pos_test": 7,
+          "auc": 0.7902350813743219
+        },
+        {
+          "fold": 20,
+          "held_out": [
+            "spring-boot"
+          ],
+          "n_train": 24007,
+          "n_test": 2127,
+          "n_pos_test": 163,
+          "auc": 0.670723326627766
+        },
+        {
+          "fold": 21,
+          "held_out": [
+            "undertow"
+          ],
+          "n_train": 25951,
+          "n_test": 183,
+          "n_pos_test": 7,
+          "auc": 0.6038961038961038
+        },
+        {
+          "fold": 22,
+          "held_out": [
+            "wildfly"
+          ],
+          "n_train": 24898,
+          "n_test": 1236,
+          "n_pos_test": 23,
+          "auc": 0.5296605613104413
+        },
+        {
+          "fold": 23,
+          "held_out": [
+            "wro4j"
+          ],
+          "n_train": 24989,
+          "n_test": 1145,
+          "n_pos_test": 16,
+          "auc": 0.7449623560673162
+        },
+        {
+          "fold": 24,
+          "held_out": [
+            "zxing"
+          ],
+          "n_train": 25789,
+          "n_test": 345,
+          "n_pos_test": 2,
+          "auc": 0.5
+        }
+      ],
+      "skipped": [
+        {
+          "fold": 5,
+          "held_out": [
+            "commons-exec"
+          ],
+          "n_test": 55,
+          "n_pos_test": 0,
+          "reason": "AUC undefined: the test fold contains a single class"
+        },
+        {
+          "fold": 15,
+          "held_out": [
+            "jimfs"
+          ],
+          "n_test": 212,
+          "n_pos_test": 0,
+          "reason": "AUC undefined: the test fold contains a single class"
+        }
+      ],
+      "run_id": "d65365855ea77ce6"
+    }
+  },
+  "baselines": {
+    "majority_class": {
+      "label": 0,
+      "accuracy": 0.968431927756945,
+      "auc": 0.5,
+      "note": "constant predictor: AUC is 0.5 by definition, accuracy is the base rate"
+    },
+    "positive_rate": 0.03156807224305502
+  },
+  "mechanism_test": {
+    "all 21 features": {
+      "n_features": 21,
+      "random": 0.7620901136927367,
+      "lopo": 0.6490007214336573,
+      "gap": 0.11308939225907944
+    },
+    "project-scale removed": {
+      "n_features": 13,
+      "random": 0.7569384714540303,
+      "lopo": 0.6877785561311057,
+      "gap": 0.06915991532292454
+    },
+    "interpretation": "Removing the 8 project-scale features shrinks the random/LOPO gap by 38.8% (0.1131 -> 0.0692), raising LOPO by +0.039 while costing the random split only 0.005. The asymmetry supports the base-rate mechanism. 61% of the gap survives, so project identity also travels by an unnamed route."
+  },
+  "prediction": {
+    "recorded_in": "experiments/06-split-comparison.md, commit 08b1c35",
+    "predicted": {
+      "random": 0.85,
+      "lopo": 0.65,
+      "gap": 0.2
+    },
+    "actual_21_features": {
+      "random": 0.7621,
+      "lopo": 0.649,
+      "gap": 0.1131
+    },
+    "verdict": "LOPO predicted within 0.001. Random overestimated by 0.09, so the gap is about half what was predicted. Direction correct, magnitude wrong."
+  }
+}

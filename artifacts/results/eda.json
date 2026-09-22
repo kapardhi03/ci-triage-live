@@ -19,7 +19,7 @@
   "join_key": "(suffix-matched project, lowercase(Test with '#'->'.'))",
   "label": "IsFlaky",
   "rows": 26134,
-  "n_features": 21,
+  "n_features": 13,
   "features": [
     "assertion-roulette",
     "conditional-test-logic",
@@ -33,14 +33,6 @@
     "numAsserts",
     "numCoveredLines",
     "ExecutionTime",
-    "projectSourceLinesCovered",
-    "projectSourceClassesCovered",
-    "hIndexModificationsPerCoveredLine_window25",
-    "hIndexModificationsPerCoveredLine_window50",
-    "hIndexModificationsPerCoveredLine_window75",
-    "hIndexModificationsPerCoveredLine_window100",
-    "hIndexModificationsPerCoveredLine_window500",
-    "hIndexModificationsPerCoveredLine_window10000",
     "num_third_party_libs"
   ],
   "excluded": [
@@ -93,12 +85,44 @@
       "reason": "project_constant"
     },
     {
+      "column": "hIndexModificationsPerCoveredLine_window100",
+      "reason": "project_scale"
+    },
+    {
+      "column": "hIndexModificationsPerCoveredLine_window10000",
+      "reason": "project_scale"
+    },
+    {
+      "column": "hIndexModificationsPerCoveredLine_window25",
+      "reason": "project_scale"
+    },
+    {
       "column": "hIndexModificationsPerCoveredLine_window5",
       "reason": "project_constant"
     },
     {
+      "column": "hIndexModificationsPerCoveredLine_window50",
+      "reason": "project_scale"
+    },
+    {
+      "column": "hIndexModificationsPerCoveredLine_window500",
+      "reason": "project_scale"
+    },
+    {
+      "column": "hIndexModificationsPerCoveredLine_window75",
+      "reason": "project_scale"
+    },
+    {
       "column": "project",
       "reason": "identifier"
+    },
+    {
+      "column": "projectSourceClassesCovered",
+      "reason": "project_scale"
+    },
+    {
+      "column": "projectSourceLinesCovered",
+      "reason": "project_scale"
     },
     {
       "column": "testClassName",

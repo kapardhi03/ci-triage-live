@@ -32,6 +32,17 @@ EXCLUDED = {
     "flaky_source": "label_derived",
     "hIndexModificationsPerCoveredLine_window5": "project_constant",
     "hIndexModificationsPerCoveredLine_window10": "project_constant",
+    # Added in phase 06. Deployment is unseen projects, and on leave-one-project-out
+    # these 8 cost 0.039 AUC while giving back 0.005 on a random split -- they help
+    # within-project and hurt across it. See decisions/06-split-choice.md.
+    "projectSourceLinesCovered": "project_scale",
+    "projectSourceClassesCovered": "project_scale",
+    "hIndexModificationsPerCoveredLine_window25": "project_scale",
+    "hIndexModificationsPerCoveredLine_window50": "project_scale",
+    "hIndexModificationsPerCoveredLine_window75": "project_scale",
+    "hIndexModificationsPerCoveredLine_window100": "project_scale",
+    "hIndexModificationsPerCoveredLine_window500": "project_scale",
+    "hIndexModificationsPerCoveredLine_window10000": "project_scale",
     "test_name": "identifier",
     "project": "identifier",
     "testClassName": "identifier",

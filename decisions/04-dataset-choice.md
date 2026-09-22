@@ -89,3 +89,19 @@ Open question for the second gate: which label is "flaky" for our purpose — re
 join on different keys (`test_features`: test_name/project/class/method; `test_results`:
 Project + Test). The choice changes the positive class by ~4x, so it must be settled and
 recorded before any model is trained.
+
+---
+
+## Superseded in part (phase 06)
+
+The decision above kept 6 `hIndexModificationsPerCoveredLine_*` columns and accepted a
+git-history dependency into the phase 00 system boundary.
+
+Phase 06 reversed it. On leave-one-project-out — the split that matches deployment — those
+columns plus `projectSourceLinesCovered` and `projectSourceClassesCovered` cost **0.039 AUC**
+while giving back only 0.005 on a random split. All 8 are now excluded with reason code
+`project_scale`, the feature matrix is 13 columns rather than 21, and the git-history
+dependency is cancelled.
+
+This section is appended rather than rewritten: the reasoning above is what was decided
+with the evidence then available. See `decisions/06-split-choice.md`.
