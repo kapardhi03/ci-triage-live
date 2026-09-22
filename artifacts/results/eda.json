@@ -1,0 +1,125 @@
+{
+  "features_rows": 26619,
+  "results_rows": 26765,
+  "results_after_project_map": 26296,
+  "results_after_dedupe": 26288,
+  "case_folding_collisions": 8,
+  "unmapped_result_projects": [
+    "apache-oozie",
+    "dropwizard-dropwizard",
+    "togglz-togglz"
+  ],
+  "rows_dropped_unmapped_project": 469,
+  "unused_feature_projects": [
+    "hadoop",
+    "oryx"
+  ],
+  "joined_rows": 26134,
+  "features_rows_unjoined": 485,
+  "join_key": "(suffix-matched project, lowercase(Test with '#'->'.'))",
+  "label": "IsFlaky",
+  "rows": 26134,
+  "n_features": 21,
+  "features": [
+    "assertion-roulette",
+    "conditional-test-logic",
+    "eager-test",
+    "fire-and-forget",
+    "indirect-testing",
+    "mystery-guest",
+    "resource-optimism",
+    "test-run-war",
+    "testLength",
+    "numAsserts",
+    "numCoveredLines",
+    "ExecutionTime",
+    "projectSourceLinesCovered",
+    "projectSourceClassesCovered",
+    "hIndexModificationsPerCoveredLine_window25",
+    "hIndexModificationsPerCoveredLine_window50",
+    "hIndexModificationsPerCoveredLine_window75",
+    "hIndexModificationsPerCoveredLine_window100",
+    "hIndexModificationsPerCoveredLine_window500",
+    "hIndexModificationsPerCoveredLine_window10000",
+    "num_third_party_libs"
+  ],
+  "excluded": [
+    {
+      "column": "FirstFailingRunID",
+      "reason": "label_derived"
+    },
+    {
+      "column": "FirstPassingRunID",
+      "reason": "label_derived"
+    },
+    {
+      "column": "IsFlaky",
+      "reason": "label"
+    },
+    {
+      "column": "NumFailingRuns",
+      "reason": "label_derived"
+    },
+    {
+      "column": "NumPassingRuns",
+      "reason": "label_derived"
+    },
+    {
+      "column": "Project",
+      "reason": "identifier"
+    },
+    {
+      "column": "Test",
+      "reason": "identifier"
+    },
+    {
+      "column": "UniqueFailingExceptionTypes",
+      "reason": "label_derived"
+    },
+    {
+      "column": "Unnamed: 0",
+      "reason": "identifier"
+    },
+    {
+      "column": "flaky",
+      "reason": "alternate_label"
+    },
+    {
+      "column": "flaky_source",
+      "reason": "label_derived"
+    },
+    {
+      "column": "hIndexModificationsPerCoveredLine_window10",
+      "reason": "project_constant"
+    },
+    {
+      "column": "hIndexModificationsPerCoveredLine_window5",
+      "reason": "project_constant"
+    },
+    {
+      "column": "project",
+      "reason": "identifier"
+    },
+    {
+      "column": "testClassName",
+      "reason": "identifier"
+    },
+    {
+      "column": "testMethodName",
+      "reason": "identifier"
+    },
+    {
+      "column": "test_name",
+      "reason": "identifier"
+    }
+  ],
+  "positives": 825,
+  "positive_rate": 0.03156807224305502,
+  "n_projects": 25,
+  "checksums": {
+    "Project_Info.csv": "5b3392a4f7367b2a566b919a98989a97",
+    "test_features.csv": "63306c05fafcc6446911ab7000f85ae0",
+    "test_results.csv": "fcd2674ab42068de627ec6afce4f6d1a"
+  },
+  "source": "FlakeFlagger, Zenodo 4450723, CC-BY-4.0"
+}
