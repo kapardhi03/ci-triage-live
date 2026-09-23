@@ -90,3 +90,72 @@ this phase exists to prevent.
 ## Result
 
 *(appended after the run — empty at the time of writing)*
+
+**Appended 2026-09-23 after the run. Nothing above this line was edited.**
+
+## The gate fired
+
+Frozen split: `GroupKFold(n_splits=5)` grouped by test class. 202 cases, 19 distinct
+messages, 10 classes, base rate 0.4950.
+
+| method | mean | std | per-fold |
+|---|---|---|---|
+| majority baseline | **0.2474** | 0.1441 | 0.344, 0.231, 0.000, 0.233, 0.429 |
+| **TF-IDF char-ngram + linear** | **0.9825** | 0.0300 | 0.989, 0.923, 1.000, 1.000, 1.000 |
+| exact-message lookup | **0.9975** | 0.0050 | 0.988, 1.000, 1.000, 1.000, 1.000 |
+
+**Stop-criterion, both conditions met:**
+
+```
+baseline accuracy 0.9825  >=  0.98                    YES
+paired gap (TF-IDF - lookup)  mean -0.0150  SE 0.0155
+|gap| <= SE  ->  inside fold noise                    YES
+
+headroom above TF-IDF to the 1.0 ceiling:  0.0175
+```
+
+**Prediction confirmed on both numbers.** Predicted "TF-IDF lands ~0.98, within noise of the
+lookup" — measured 0.9825, gap −0.0150 against SE 0.0155.
+
+**No GPU provisioned. No fine-tune. Recorded as a complete decision.**
+
+## The unpredicted result: the majority baseline is worse than chance
+
+**0.2474, not ~0.50.** Under `GroupKFold` by test class the held-out class is homogeneous —
+every `HttpOverSpdy3Test.*` is deterministic — so the training majority systematically
+mispredicts the *entire* held-out fold. One fold scores **0.000**.
+
+This is a grouped-splitting artifact on a 10-class vocabulary, and it cuts both ways: read
+alone, "baseline 0.247" suggests a hard task when the opposite is true, while "base rate
+0.495" understates how structured the corpus is. Both are recorded in
+`artifacts/results/distill-corpus.json`.
+
+## Why the gate fired on evidence rather than cost
+
+Neither cost line binds:
+
+- **compute:** the memory ledger redrew a 37.47 GiB full fine-tune down to **1.92 GiB** with
+  4-bit quantisation, LoRA and gradient checkpointing — a free Kaggle T4 has eight times
+  that headroom;
+- **data:** one real rendered prompt at 677 input tokens prices all 202 cases at **~$8.26**
+  with Opus 5 at modest thinking.
+
+So the phase-05 expectation — *"the real cost is the distillation API calls, not the GPU"* —
+is **overturned. On this corpus it is neither.** The honest reason to stop is not *we could
+not afford it* but *we measured that it would not help*, which is the harder thing to write
+down and the whole point of the gate.
+
+## `precomputed/slm-eval.json` stays sealed
+
+The falsifier — baseline below ~0.97 — did not fire, so by the pre-registered rule the file
+is not opened. The gate fired on this project's own evidence, and reading the reference
+numbers after a decision is recorded could only tempt a retrofit. No number from it appears
+anywhere in this phase, and nothing of this project's was substituted from it.
+
+## Scope, restated so the stop does not inflate
+
+**"No fine-tune" means no fine-tune is justified by the evidence on this corpus** — one
+project's failure text, 19 distinct messages, 202 cases. It does **not** mean SLM
+distillation never helps for CI explanation. A corpus with hundreds of distinct,
+novel-phrased messages could flip it, because then generalisation over lexical variety is a
+real task and TF-IDF's ceiling would sit lower.

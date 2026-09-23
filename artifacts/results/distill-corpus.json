@@ -1,0 +1,73 @@
+{
+  "status": "PRICED_NOT_RUN",
+  "reason": "the pre-GPU gate fired on the baselines, so there was nothing for a distilled corpus to train. No API call was made and no corpus was purchased.",
+  "rendered_prompt": {
+    "source": "experiments/12-distillation-cost.md (verbatim, 1895 chars)",
+    "case": "ResponseCacheTest.cacheCanUseCriteriaBesidesVariantObeyed",
+    "real_evidence": true,
+    "synthetic": false,
+    "input_tokens_estimated": 677,
+    "chars_per_token_assumed": 2.8,
+    "counted_with_count_tokens": false,
+    "caveat": "estimated, not counted -- messages.count_tokens needs credentials this environment lacks. 2.8 ch/tok is conservative so input prices are upper bounds."
+  },
+  "rate_source": {
+    "origin": "claude-api skill model table",
+    "cached": "2026-06-24",
+    "cited_not_recalled": true,
+    "rates_usd_per_mtok": {
+      "claude-opus-5": {
+        "in": 5.0,
+        "out": 25.0
+      },
+      "claude-sonnet-5": {
+        "in": 2.0,
+        "out": 10.0
+      },
+      "claude-haiku-4-5": {
+        "in": 1.0,
+        "out": 5.0
+      }
+    },
+    "caveat": "if the table has drifted since 2026-06-24 every price below drifts with it"
+  },
+  "budget": {
+    "n_cases": 202,
+    "usd_all_202": {
+      "opus-5": {
+        "out_250": 1.95,
+        "out_1500": 8.26,
+        "out_4000": 20.88
+      },
+      "sonnet-5": {
+        "out_250": 0.78,
+        "out_1500": 3.3,
+        "out_4000": 8.35
+      },
+      "haiku-4-5": {
+        "out_250": 0.39,
+        "out_1500": 1.65,
+        "out_4000": 4.18
+      }
+    },
+    "usd_2000_cases_opus5_modest": 81.77,
+    "usd_2000_cases_opus5_modest_batch_api": 40.88,
+    "note": "adaptive thinking bills thinking as output and Opus 5 thinks by default, so three output scenarios are priced rather than one"
+  },
+  "stop_number": {
+    "reached": false,
+    "note": "~$8 is not a budget question, and the memory ledger showed 1.92 GiB fits a free T4. Nothing in this phase is gated by cost, which forces the gate to fire on evidence instead."
+  },
+  "label_distribution": {
+    "n": 202,
+    "n_flaky": 100,
+    "n_deterministic": 102,
+    "raw_base_rate": 0.495,
+    "majority_baseline_under_grouped_split": 0.2474,
+    "note": "THIS is the majority baseline, and it is neither 50% nor the raw base rate. Under GroupKFold by test class the held-out class is homogeneous, so the training majority mispredicts the whole fold -- worse than chance, not at it."
+  },
+  "examples_labelled": 0,
+  "examples_declined": 0,
+  "parse_failures": 0,
+  "actual_total_cost_usd": 0.0
+}

@@ -1,0 +1,77 @@
+{
+  "status": "NO_FINE_TUNE",
+  "gate": "pre-GPU stop gate, TASK steps 5-6",
+  "gate_outcome": "FIRED",
+  "scope": "square-okhttp failure text only: 202 cases, 19 distinct messages, 10 test classes, base rate 0.4950. One project. NOT comparable to precomputed/ (17 projects).",
+  "frozen_split": "GroupKFold(n_splits=5) grouped by test class",
+  "baselines": {
+    "majority": {
+      "mean": 0.2474,
+      "std": 0.1441,
+      "per_fold": [
+        0.3441,
+        0.2308,
+        0.0,
+        0.2333,
+        0.4286
+      ]
+    },
+    "tfidf_char_ngram_linear": {
+      "mean": 0.9825,
+      "std": 0.03,
+      "per_fold": [
+        0.9892,
+        0.9231,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "exact_message_lookup": {
+      "mean": 0.9975,
+      "std": 0.005,
+      "per_fold": [
+        0.9875,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "gate_arithmetic": {
+    "stop_criterion": "baseline accuracy >= ~0.98 AND its gap to the exact-message lookup inside fold noise",
+    "baseline_accuracy": 0.9825,
+    "threshold": 0.98,
+    "condition_1_met": true,
+    "paired_gap_mean": -0.015,
+    "paired_gap_se": 0.0155,
+    "condition_2_met": true,
+    "headroom_to_ceiling": 0.0175
+  },
+  "keep_criterion": {
+    "rule": "mean gain over baseline exceeding the SE of paired per-fold differences (the noise-adjusted rule used since phase 08)",
+    "reachable": false,
+    "why": "under 1.5 points of headroom above TF-IDF and under 0.6 above the lookup; you cannot beat 0.9975 by a noise-clearing margin when the ceiling is 1.0"
+  },
+  "fine_tune": {
+    "run": false,
+    "gpu_provisioned": false,
+    "memory_ledger_gib": 1.92,
+    "fits_free_kaggle_t4": true,
+    "distillation_cost_usd": 8.26,
+    "why_not": "not affordability -- compute is free and the corpus is ~$8. 19 distinct messages means the task is memorisation of a tiny vocabulary, so an SLM would learn the same 19-way lookup more expensively with more capacity to overfit. There are almost no unseen phrasings to generalise to."
+  },
+  "precomputed_slm_eval": {
+    "unsealed": false,
+    "why": "the falsifier (baseline below ~0.97) did not fire, so by the pre-registered rule it stays sealed. The gate fired on this project's own evidence and reading the reference numbers afterwards could only tempt a retrofit.",
+    "substituted_for_own_numbers": false
+  },
+  "prediction": {
+    "recorded_in": "experiments/12-finetune-vs-tfidf.md, commit 2865b61, before the run",
+    "predicted": "gate fires; TF-IDF lands ~0.98, within noise of the lookup; no GPU",
+    "actual": "gate fired; TF-IDF 0.9825; gap -0.0150 against SE 0.0155; no GPU",
+    "verdict": "CONFIRMED on both numbers"
+  },
+  "scope_limit": "'No fine-tune' means no fine-tune is justified by the evidence on THIS corpus -- not that SLM distillation never helps for CI explanation. A corpus with hundreds of distinct, novel-phrased messages could flip it, because then generalisation over lexical variety is a real task and TF-IDF's ceiling would sit lower."
+}
