@@ -1,0 +1,120 @@
+{
+  "scope": "202 square-okhttp cases, the set all three observers can speak about. Base rate 0.495 against deployment's 0.0316 -- any winner here is flattered. NOT comparable to precomputed/fusion-comparison.json.",
+  "frozen_case_list": {
+    "n": 202,
+    "sha256_16": "305d8ece8a0fa240",
+    "base_rate": 0.495
+  },
+  "observers": {
+    "tabular": {
+      "n": 202,
+      "min": 0.0065,
+      "max": 0.1609,
+      "n_distinct": 152,
+      "calibrated": true,
+      "cause_group": "ssl-jvm",
+      "note": "maximum probability 0.1609 -- never crosses 0.5 on any case"
+    },
+    "sequence": {
+      "n": 202,
+      "min": 0.0,
+      "max": 1.0,
+      "n_distinct": 14,
+      "calibrated": false,
+      "cause_group": "run-history"
+    },
+    "lookup": {
+      "n": 166,
+      "min": 0.0,
+      "max": 1.0,
+      "n_distinct": 8,
+      "calibrated": false,
+      "cause_group": "ssl-jvm",
+      "n_no_evidence": 36
+    }
+  },
+  "deduplication": {
+    "records_collapsed": 166,
+    "distinct_voices_mean": 2.0,
+    "distinct_voices_max": 2,
+    "false_consensus_cases": 0,
+    "note": "observers 1 and 3 share ssl-jvm, so fusion is over 2 voices, never 3. The lookup wins the collapse 161 times, tabular 41."
+  },
+  "strategies": {
+    "A_most_confident": {
+      "status": "complete",
+      "accuracy": 0.9554455445544554,
+      "ece": 0.043525262686333395,
+      "coverage": 1.0,
+      "n_covered": 202,
+      "n_total": 202
+    },
+    "B_mean": {
+      "status": "complete",
+      "accuracy": 0.9554455445544554,
+      "ece": 0.09139281437687852,
+      "coverage": 1.0,
+      "n_covered": 202,
+      "n_total": 202
+    },
+    "C_threshold": {
+      "status": "complete",
+      "accuracy": 0.9554455445544554,
+      "ece": 0.04455445544554455,
+      "coverage": 1.0,
+      "n_covered": 202,
+      "n_total": 202
+    },
+    "D_escalate_on_disagreement": {
+      "status": "complete",
+      "accuracy": 0.9939759036144579,
+      "ece": 0.007107931411226119,
+      "coverage": 0.8217821782178217,
+      "n_covered": 166,
+      "n_total": 202
+    },
+    "E_llm_arbiter": {
+      "status": "incomplete",
+      "reason": "no LLM client configured; this strategy is incomplete and must not be ranked",
+      "ranked": false
+    }
+  },
+  "coverage_adjusted": {
+    "question": "is D's advantage bought by abstaining? (refutation condition 3)",
+    "on_D_covered_166": {
+      "A": 0.994,
+      "B": 0.994,
+      "C": 0.994,
+      "D": 0.994
+    },
+    "verdict": "FIRES. On the same 166 cases every strategy scores identically. D's entire advantage is which cases it declines, not how it decides them."
+  },
+  "identical_decisions": {
+    "A_vs_B": "202/202",
+    "A_vs_C": "202/202",
+    "B_vs_C": "202/202",
+    "verdict": "A, B and C produce identical labels on every case. They are one decision rule emitting three different probabilities -- which is why their ECE differs and their accuracy does not."
+  },
+  "prediction": {
+    "recorded_in": "experiments/11-fusion-comparison.md, commit 99516bd, before implementation",
+    "accuracy_predicted": "C > D > A > B",
+    "accuracy_actual": "D (0.9940, 82.2% cov) > A = B = C (0.9554, tied exactly)",
+    "calibration_predicted": "B > D > A > C",
+    "calibration_actual": "D (0.0071) > A (0.0435) > C (0.0446) > B (0.0914)",
+    "committed_claim": "the two rankings nearly invert; C tops accuracy and bottoms calibration",
+    "committed_claim_verdict": "REFUTED. Accuracy has no ordering to invert -- A, B and C tie exactly. D tops both rankings and A is second in both, so they agree rather than invert. B, predicted best on calibration, came last.",
+    "refutation_conditions_fired": [
+      "3 - D's advantage disappears once coverage is accounted for (0.9940 for everyone on the same 166)",
+      "4 - every strategy lands within noise of every other; stronger than predicted, they are identical on 202/202"
+    ]
+  },
+  "arbiter": {
+    "status": "incomplete",
+    "reason": "no ANTHROPIC_API_KEY / OPENAI_API_KEY / GEMINI_API_KEY and no SDK installed",
+    "predicted_position": "2nd on accuracy, near-worst on calibration",
+    "checked": false,
+    "prompt_rendered": "decisions/11-arbiter-rules.md (1320 characters, audited against the forbidden-to-see list)",
+    "ranked": false
+  },
+  "conclusion": "Fusion adds nothing. Four strategies reduce to one decision rule: A, B and C emit identical labels on all 202 cases, and D reproduces phase 09's MessageLookup exactly (0.9940 on 166) while every other strategy also scores 0.9940 on those same cases. The tabular observer never exceeds probability 0.1609, so it cannot influence any decision at a 0.5 cutoff; after slice 10 collapses it with the lookup, fusion is over two voices of which one is inert. The pre-registered claim that accuracy and calibration rankings would invert is refuted."
+}
