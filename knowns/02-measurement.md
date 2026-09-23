@@ -17,3 +17,12 @@
 | known-unknown | known-unknown | how many ECE bins is right for the real dataset — 10 is a default, not a decision | — |
 | known-unknown | known-unknown | the abstain threshold is still not derived; risk–coverage can now measure it but has not chosen it | — |
 | known-unknown | known-unknown | whether the ~40h / ~3h / ~1.5h guesses survive contact with real incident data | knowns/01-decision-and-cost.md |
+
+## Correction (phase 07)
+
+| Was | Now | Statement | Evidence |
+|---|---|---|---|
+| known | **wrong** | "cost-weighted risk for both useless models is 1.20 engineer-hours/build" — the cost mapping was inverted against `IsFlaky`; the corrected figure is **0.09** | decisions/02-metric-ladder.md (correction) |
+| unknown | known | an inverted cost table does not merely misreport magnitude — it makes "call it flaky" look cheap and points the system at the 40h error | decisions/02-metric-ladder.md (correction) |
+| assumed | known | the phase 02 asymmetry test encoded the same misreading in its comments, so it passed while being wrong — the circular-test failure again | tests/test_metrics.py |
+| unknown | known | direction is now pinned: `y=0` predicted `1` charges 40h, `y=1` predicted `0` charges 3h; flipping the mapping fails two tests | tests/test_metrics.py::test_the_expensive_error_is_calling_a_real_defect_flaky |

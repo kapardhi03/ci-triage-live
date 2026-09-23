@@ -75,3 +75,38 @@ on calibration without a discrimination number beside it.
 
 Nothing. It measures. Threshold selection, abstention policy, and model choice happen in
 later phases and read these numbers — they are not computed here.
+
+---
+
+## Correction (phase 07): the cost mapping was inverted
+
+`cost_weighted_risk` charged the wrong cost to each error. The label is `IsFlaky`, so
+`y == 1` is **flaky** and `y == 0` is **not flaky — a real defect**. Phase 01's table prices
+*real defect called flaky* at ~40h (the bug ships) and *flaky called real defect* at ~3h
+(a needless hold). `ci_triage/metrics.py` had them the other way round, and its comment
+asserted `y == 1` meant "real defect."
+
+It survived phase 02 because that phase only ran the function on toy arrays where nothing
+pinned `y = 1` to a meaning, and the asymmetry test encoded the same misreading in its own
+comments — so it passed while being wrong. The same self-referential failure as phase 04's
+circular leak test, in a different module.
+
+**It is worse than a factor of 13.** Inverted, the table makes missing a flaky test
+expensive and shipping a defect cheap, so any threshold or model tuned against it optimises
+*toward* calling things flaky — which is the 40h error phase 01 priced highest. The bug did
+not only misreport cost; it aimed the system at the wrong mistake.
+
+The `cost_weighted_risk` row in the table above is therefore wrong. Corrected:
+
+| | constant 0.0 | base-rate 0.03 | perfect ranker |
+|---|---|---|---|
+| cost_weighted_risk **(as reported)** | 1.20 | 1.20 | 0.00 |
+| cost_weighted_risk **(corrected)** | **0.09** | **0.09** | **0.00** |
+
+Every other number in this file is unaffected — AUC, recall, ECE and Brier do not read the
+cost table. The conclusion that ECE alone selects the useless model stands unchanged, and
+so does the cost column's *ranking*: the useless models still cost more than the perfect
+one. Only the magnitude was wrong.
+
+`tests/test_metrics.py::test_the_expensive_error_is_calling_a_real_defect_flaky` now pins
+the direction explicitly, and flipping the mapping back fails two tests.

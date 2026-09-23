@@ -9,10 +9,14 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 
-# Cost table from phase 01 (engineer-hours)
+# Cost table from phase 01 (engineer-hours).
+#
+# The label is IsFlaky: y == 1 means FLAKY, y == 0 means NOT flaky, i.e. a real defect.
+# Getting this mapping backwards points the system at the wrong error -- it makes
+# "call it flaky" look cheap, which is the 40h mistake. See decisions/02 (correction).
 DEFAULT_COSTS = {
-    "false_flaky": 40.0,   # real defect called flaky -> bug ships
-    "false_real": 3.0,     # flaky called real defect -> needless hold
+    "false_flaky": 40.0,   # y=0 (real defect) predicted 1 (flaky) -> bug ships
+    "false_real": 3.0,     # y=1 (flaky) predicted 0 (real defect) -> needless hold
     "abstain": 1.5,        # engineer investigates manually
 }
 
@@ -67,9 +71,9 @@ def cost_weighted_risk(y_true, y_pred, costs=None):
     for yt, yp in zip(y_true, y_pred):
         if yp == -1:  # abstain
             total += costs["abstain"]
-        elif yt == 1 and yp == 0:  # real defect called not-flaky/flaky
+        elif yt == 0 and yp == 1:  # real defect called flaky -> bug ships
             total += costs["false_flaky"]
-        elif yt == 0 and yp == 1:  # flaky called real defect
+        elif yt == 1 and yp == 0:  # flaky called real defect -> needless hold
             total += costs["false_real"]
     return total / n
 

@@ -57,3 +57,38 @@ against it.
 If supported, `ExecutionTime` joins the exclusion list in `ci_triage/data.py` with reason
 code `label_derived`, `artifacts/results/eda.json` is regenerated, and every result produced
 before that point is restated. Recording that cost now, while it is cheap to accept.
+
+---
+
+## Result (appended 2026-09-23; nothing above was edited)
+
+| | LOPO AUC |
+|---|---|
+| with `ExecutionTime` (13 features) | **0.6765** ±0.163 |
+| without `ExecutionTime` (12 features) | **0.5577** ±0.130 |
+| cost of dropping it | **0.1188** |
+
+**Inconclusive, leaning against the claim — and it surfaced something larger.**
+
+The support condition was that dropping it would cost *materially less* held-out AUC than
+its standalone 0.7607 implies, which is what signal duplicating the label looks like. The
+opposite happened: it holds its contribution under the grouped split, and removing it
+collapses the model to 0.5577 — barely above chance. That matches the second **abandon**
+condition ("it holds its contribution under the grouped split in step with the other
+features"), except it does not hold in step with them, it carries nearly all of it.
+
+**Why this is not a clean refutation.** A leak present in both training and test folds
+transfers perfectly well; the test data is contaminated too. So this measurement cannot
+separate "real transferable signal" from "a leak that is uniformly present." The decisive
+evidence remains the one thing the dataset does not ship: whether `ExecutionTime` was
+measured on runs that include failures. Still open.
+
+**The larger finding.** The tabular observer is effectively a single feature. Twelve of the
+thirteen columns together score 0.5577. Whatever phases 08–11 build has to carry information
+`ExecutionTime` does not already contain, and the independence question slice 10 asks is
+sharper than expected: three observers are only three observers if they do not all reduce
+to the same column.
+
+Also confirmed as designed: `ExecutionTime` drives **39.4%** of the alien-project distance
+metric — three times the next feature. The coupling recorded in `design/07` before
+measurement holds. If it does leak, the observer and its own safeguard fail together.

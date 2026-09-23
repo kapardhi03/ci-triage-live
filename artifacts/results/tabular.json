@@ -1,0 +1,312 @@
+{
+  "scope": "25 projects, 13 features, leave-one-project-out (23 evaluable folds). TASK describes 23 features; phase 06 removed 8. NOT comparable to precomputed/.",
+  "model": "HistGradientBoostingClassifier(max_iter=200), CalibratedClassifierCV(cv=3)",
+  "split": "leave_one_project_out",
+  "floor_phase_06_logistic_regression": 0.6878,
+  "rows": {
+    "uncalibrated": {
+      "mean": {
+        "auc": 0.6765246977226357,
+        "ece_ew": 0.09073358213828092,
+        "ece_ef": 0.09254791850811328,
+        "brier": 0.09088693033162965,
+        "cost": 0.5440323013108453
+      },
+      "std": {
+        "auc": 0.16340006292357628,
+        "ece_ew": 0.13184738147819255,
+        "ece_ef": 0.1297295465011615,
+        "brier": 0.13285378843548556,
+        "cost": 0.4801652892306181
+      },
+      "n_folds": 23
+    },
+    "calibrated_sigmoid": {
+      "mean": {
+        "auc": 0.6781248876720188,
+        "ece_ew": 0.08474486566701353,
+        "ece_ef": 0.09021174013395337,
+        "brier": 0.08553428710817032,
+        "cost": 0.270809565046366
+      },
+      "std": {
+        "auc": 0.15916420353111155,
+        "ece_ew": 0.1300197389238729,
+        "ece_ef": 0.1286230008290987,
+        "brier": 0.13355257101198645,
+        "cost": 0.4240273308379133
+      },
+      "n_folds": 23
+    },
+    "calibrated_isotonic": {
+      "mean": {
+        "auc": 0.6649507305131488,
+        "ece_ew": 0.08529986425722864,
+        "ece_ef": 0.09109710904768109,
+        "brier": 0.0859203055909843,
+        "cost": 0.2724080305195118
+      },
+      "std": {
+        "auc": 0.15266011702076807,
+        "ece_ew": 0.12991328463208013,
+        "ece_ef": 0.12826145594946078,
+        "brier": 0.13345058797360856,
+        "cost": 0.42317061922538096
+      },
+      "n_folds": 23
+    }
+  },
+  "threshold_sweep": {
+    "calibrated": {
+      "constant_always_real_defect": 0.09568175667839332,
+      "max_probability": 0.23616776266095615,
+      "cost_optimal_threshold_from_table": 0.93,
+      "rows_above_0_93": 0,
+      "best_threshold_found": 0.23650000000000002,
+      "best_cost": 0.09568175667839332,
+      "beats_constant": false,
+      "cost_at_0_93": 0.09568175667839332,
+      "precision_at_k": {
+        "10": 0.1,
+        "25": 0.04,
+        "50": 0.06,
+        "100": 0.06,
+        "250": 0.068
+      },
+      "base_rate": 0.031893918892797773
+    },
+    "uncalibrated": {
+      "constant_always_real_defect": 0.09568175667839332,
+      "max_probability": 0.9765010533964088,
+      "cost_optimal_threshold_from_table": 0.93,
+      "rows_above_0_93": 10,
+      "best_threshold_found": 0.977,
+      "best_cost": 0.09568175667839332,
+      "beats_constant": false,
+      "cost_at_0_93": 0.11114547492944679,
+      "precision_at_k": {
+        "10": 0.0,
+        "25": 0.04,
+        "50": 0.06,
+        "100": 0.1,
+        "250": 0.1
+      },
+      "base_rate": 0.031893918892797773
+    }
+  },
+  "abstention": {
+    "abstain_cost_per_row": 1.5,
+    "no_abstention_cost": 0.09568175667839332,
+    "best_qualifier_threshold": 0.0,
+    "best_qualifier_cost": 0.09568175667839332,
+    "oracle_cost": 0.09307225422352805,
+    "oracle_abstains_on": [
+      "alluxio"
+    ],
+    "max_possible_saving": 0.00260950245486527,
+    "max_possible_saving_pct": 0.02727272727272725,
+    "spearman_qualifier_cost": -0.357,
+    "spearman_qualifier_auc": 0.323,
+    "verdict": "REFUTED. Abstention costs 1.5h/row to avoid 0.0957h/row of error. Even a qualifier that knows the answer saves 2.7%, abstaining on one project.",
+    "per_project": [
+      {
+        "held_out": "Achilles",
+        "n": 1317,
+        "n_pos": 4,
+        "qualifier": 0.7884487869963499,
+        "auc": 0.880997715156131,
+        "cost_if_covered": 0.009111617312072893
+      },
+      {
+        "held_out": "activiti",
+        "n": 2044,
+        "n_pos": 32,
+        "qualifier": 0.12445746809503866,
+        "auc": 0.5029044483101391,
+        "cost_if_covered": 0.046966731898238745
+      },
+      {
+        "held_out": "alluxio",
+        "n": 187,
+        "n_pos": 116,
+        "qualifier": 0.24226997980554565,
+        "auc": 0.8590335114133074,
+        "cost_if_covered": 1.86096256684492
+      },
+      {
+        "held_out": "ambari",
+        "n": 324,
+        "n_pos": 52,
+        "qualifier": 0.6755118690907429,
+        "auc": 0.7263150452488688,
+        "cost_if_covered": 0.48148148148148145
+      },
+      {
+        "held_out": "assertj-core",
+        "n": 6261,
+        "n_pos": 1,
+        "qualifier": 0.7549688418889974,
+        "auc": 0.2546325878594249,
+        "cost_if_covered": 0.0004791566842357451
+      },
+      {
+        "held_out": "elastic-job-lite",
+        "n": 558,
+        "n_pos": 3,
+        "qualifier": 0.8535811457009883,
+        "auc": 0.833033033033033,
+        "cost_if_covered": 0.016129032258064516
+      },
+      {
+        "held_out": "handlebars.java",
+        "n": 427,
+        "n_pos": 1,
+        "qualifier": 0.8541942690819411,
+        "auc": 0.7676056338028169,
+        "cost_if_covered": 0.00702576112412178
+      },
+      {
+        "held_out": "hbase",
+        "n": 431,
+        "n_pos": 145,
+        "qualifier": 0.42135055452351344,
+        "auc": 0.6119122257053291,
+        "cost_if_covered": 1.0092807424593968
+      },
+      {
+        "held_out": "hector",
+        "n": 142,
+        "n_pos": 33,
+        "qualifier": 0.8249985893753805,
+        "auc": 0.5312760633861551,
+        "cost_if_covered": 0.6971830985915493
+      },
+      {
+        "held_out": "http-request",
+        "n": 163,
+        "n_pos": 18,
+        "qualifier": 0.0,
+        "auc": 0.4151340996168582,
+        "cost_if_covered": 0.3312883435582822
+      },
+      {
+        "held_out": "httpcore",
+        "n": 712,
+        "n_pos": 22,
+        "qualifier": 0.7196290700637653,
+        "auc": 0.8691699604743083,
+        "cost_if_covered": 0.09269662921348315
+      },
+      {
+        "held_out": "incubator-dubbo",
+        "n": 2176,
+        "n_pos": 19,
+        "qualifier": 0.8266381368171631,
+        "auc": 0.7934265427128322,
+        "cost_if_covered": 0.02619485294117647
+      },
+      {
+        "held_out": "jackrabbit-oak",
+        "n": 3898,
+        "n_pos": 15,
+        "qualifier": 0.7047333028115642,
+        "auc": 0.6167997252983088,
+        "cost_if_covered": 0.011544381734222679
+      },
+      {
+        "held_out": "java-websocket",
+        "n": 145,
+        "n_pos": 23,
+        "qualifier": 0.759268896504722,
+        "auc": 0.7512473271560941,
+        "cost_if_covered": 0.47586206896551725
+      },
+      {
+        "held_out": "logback",
+        "n": 843,
+        "n_pos": 22,
+        "qualifier": 0.822743704167155,
+        "auc": 0.745764588639132,
+        "cost_if_covered": 0.07829181494661921
+      },
+      {
+        "held_out": "ninja",
+        "n": 307,
+        "n_pos": 1,
+        "qualifier": 0.7178742620579597,
+        "auc": 0.8954248366013072,
+        "cost_if_covered": 0.009771986970684038
+      },
+      {
+        "held_out": "okhttp",
+        "n": 810,
+        "n_pos": 100,
+        "qualifier": 0.8286529691063583,
+        "auc": 0.6287323943661972,
+        "cost_if_covered": 0.37037037037037035
+      },
+      {
+        "held_out": "orbit",
+        "n": 86,
+        "n_pos": 7,
+        "qualifier": 0.6503416188381519,
+        "auc": 0.6491862567811935,
+        "cost_if_covered": 0.2441860465116279
+      },
+      {
+        "held_out": "spring-boot",
+        "n": 2127,
+        "n_pos": 163,
+        "qualifier": 0.7337810845647985,
+        "auc": 0.8024658578336437,
+        "cost_if_covered": 0.229901269393512
+      },
+      {
+        "held_out": "undertow",
+        "n": 183,
+        "n_pos": 7,
+        "qualifier": 0.5492332277826917,
+        "auc": 0.6022727272727272,
+        "cost_if_covered": 0.11475409836065574
+      },
+      {
+        "held_out": "wildfly",
+        "n": 1236,
+        "n_pos": 23,
+        "qualifier": 0.8415368893283205,
+        "auc": 0.6045377970536578,
+        "cost_if_covered": 0.055825242718446605
+      },
+      {
+        "held_out": "wro4j",
+        "n": 1145,
+        "n_pos": 16,
+        "qualifier": 0.7830969976776235,
+        "auc": 0.7360496014171833,
+        "cost_if_covered": 0.04192139737991266
+      },
+      {
+        "held_out": "zxing",
+        "n": 345,
+        "n_pos": 2,
+        "qualifier": 0.5804392890018819,
+        "auc": 0.5189504373177842,
+        "cost_if_covered": 0.017391304347826087
+      }
+    ]
+  },
+  "execution_time_leak_test": {
+    "with_ExecutionTime": {
+      "mean": 0.6765246977226357,
+      "std": 0.16340006292357628,
+      "n": 13
+    },
+    "without_ExecutionTime": {
+      "mean": 0.5577161987903775,
+      "std": 0.12976322903289222,
+      "n": 12
+    },
+    "delta": 0.1188084989322582
+  },
+  "conclusion": "The tabular observer does not beat the constant 'always hold the release' policy at any threshold, calibrated or uncalibrated. Precision peaks at 10% (3x base rate); the cost table requires 93%. The pivot to abstention is refuted. Recorded as a failed component, not rescoped into a success."
+}
