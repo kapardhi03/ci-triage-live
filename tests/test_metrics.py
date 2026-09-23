@@ -99,15 +99,28 @@ def test_cost_table_asymmetry_is_enforced():
     flaky test: ~3h. If someone flattens the cost table, the ruler stops measuring the
     objective this system was built for, and this test fails.
     """
-    y_true = np.array([1, 0])   # one real defect, one flaky
-    miss_defect = np.array([0, 0])   # called the defect not-flaky -> bug ships
-    needless_hold = np.array([1, 1])  # held the release on the flaky one
+    # IsFlaky semantics: y == 1 is FLAKY, y == 0 is NOT flaky, i.e. a real defect.
+    y_true = np.array([0, 1])         # one real defect, one flaky test
+    ship_the_bug = np.array([1, 1])   # called the real defect flaky -> ships -> 40h
+    needless_hold = np.array([0, 0])  # called the flaky test a real defect -> hold -> 3h
 
-    cost_miss = cost_weighted_risk(y_true, miss_defect)
+    cost_miss = cost_weighted_risk(y_true, ship_the_bug)
     cost_hold = cost_weighted_risk(y_true, needless_hold)
 
     assert cost_miss > cost_hold
     assert cost_miss / cost_hold == pytest.approx(40.0 / 3.0, rel=1e-6)
+
+
+def test_the_expensive_error_is_calling_a_real_defect_flaky():
+    """Direction check the old asymmetry test could not make.
+
+    y=0 is a real defect. Predicting 1 (flaky) ships the bug: 40h. The inverse error --
+    y=1 predicted 0 -- merely holds a release: 3h. An inverted table makes "call it
+    flaky" look cheap, which points the system at exactly the mistake phase 01 priced
+    highest. This test fails if the mapping flips.
+    """
+    assert cost_weighted_risk(np.array([0]), np.array([1])) == 40.0
+    assert cost_weighted_risk(np.array([1]), np.array([0])) == 3.0
 
 
 def test_abstain_is_cheap_but_not_free():
