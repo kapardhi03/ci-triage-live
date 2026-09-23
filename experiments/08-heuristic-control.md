@@ -105,3 +105,72 @@ collapsed to one constant output, and AUC alone cannot distinguish them.
 ## Result
 
 *(appended after the run — empty at the time of writing)*
+
+**Appended 2026-09-23 after the run. Nothing above this line was edited.**
+
+## The result
+
+| project | k | n | pos | control | model raw | model cal | n_distinct cal |
+|---|---|---|---|---|---|---|---|
+| `kevinsawicki` | 200 | 163 | 15 | **1.0000** | **0.0000** | 0.5000 | **1** |
+| `square-okhttp` | 200 | 810 | 100 | 0.4967 | 0.4881 | **0.4975** | 3 |
+| `tootallnate` | 200 | 145 | 23 | **0.8478** | 0.4348 | 0.6087 | 2 |
+| `kevinsawicki` | 2000 | 163 | 15 | 1.0000 | 1.0000 | 1.0000 | 2 |
+| `square-okhttp` | 2000 | 810 | 20 | **0.7897** | 0.6967 | 0.7322 | 3 |
+| `tootallnate` | 2000 | 145 | 21 | **0.9992** | 0.5261 | 0.6190 | 4 |
+
+**Control wins 4 cells, ties 2, loses 0.** The model never wins.
+
+## The criterion fired
+
+> Keep if model AUC on `square-okhttp`/200 ≥ 0.5467. Throw it away otherwise.
+
+**Model: 0.4975. Required: 0.5467. Throw it away.**
+
+No reading of the result argues around it, which is what the criterion was written for.
+
+## Why TASK demanded `n_distinct` — demonstrated
+
+`kevinsawicki`/200: calibrated AUC **0.5000**, `n_distinct_calibrated` = **1**.
+
+That 0.5 does not mean "ranks at chance." It means the calibrated model emitted **one
+constant value for all 163 tests** — it has no ranking at all. AUC alone cannot tell those
+apart, and a report without `n_distinct` would have shown a respectable-looking 0.5 hiding a
+model that had collapsed.
+
+The raw number is stranger still: **AUC 0.0000**. Not chance — *perfectly inverted*. Every
+positive ranked below every negative. The GRU learned a real relationship on the other two
+projects and it is exactly backwards on this one. Isotonic calibration, being monotonic
+non-decreasing, cannot un-invert a ranking; it flattened it to a constant instead.
+
+## Distinguishability in the decision cell
+
+Bootstrap, 4,000 resamples, `square-okhttp`/200:
+
+```
+control AUC 0.4967   95% CI [0.4647, 0.5331]   -> contains 0.5
+model   AUC 0.4975
+```
+
+**Neither predictor is distinguishable from chance.** The cell was chosen *because* the
+control was dead there, on the reasoning that it was the only place anything was at stake.
+It turns out nothing works there — the sequence of the first 200 runs carries no usable
+information about whether a test flips later.
+
+So the honest statement is not "the model failed to beat the control." It is that **in the
+one cell where the question was open, neither approach has anything to say**, and in the
+five cells where the control works, the model is worse.
+
+## The decision
+
+**Withdrawn.** A `sum()` over a list is a better sequence observer than a trained GRU on
+this data.
+
+## What survives
+
+The **label-conflation finding** recorded before any code: `IsFlaky` does not distinguish
+`P P F P F P` (genuine non-determinism) from `F F F F P P P P` (broken, then fixed). Both
+satisfy `NumFailingRuns > 0 AND NumPassingRuns > 0`. It was rejected as a learning task
+because the label would be a function of its own input — but it remains a real defect in the
+label, unmeasured, and it belongs in phase 13's honest account of what this system is
+built on.

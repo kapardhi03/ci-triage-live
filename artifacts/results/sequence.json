@@ -1,0 +1,151 @@
+{
+  "scope": "3 projects with archives, project-grouped split (3 folds). NOT comparable to precomputed/sequence-eval.json (17 projects) or to phase 06/07 numbers.",
+  "formulation": "prefix predicts suffix: features = first k TRUSTED run outcomes, label = does the remainder contain both a pass and a fail. No run appears in both halves.",
+  "control": "count of failures in the prefix. No training, no parameters, one sum().",
+  "model": "GRU(hidden=16), 30 epochs, Adam lr=0.01, pos_weight balanced; isotonic calibration fitted on the training fold.",
+  "dataset_decision": "never-failing tests included -- at 02:47 the observer does not pre-filter to tests that have historically failed.",
+  "criterion_preregistered": {
+    "decided_in": "experiments/08-heuristic-control.md, commit 77de889, before the model existed",
+    "rule": "judge on square-okhttp at prefix 200 alone (the only cell where the control is dead at 0.4967). Keep if model AUC >= 0.5467, else throw away.",
+    "withdrawn_first_attempt": "'beat the control by 0.05 in every cell' -- unsatisfiable, 3 of 6 cells have less headroom than the margin.",
+    "result": 0.49745070422535215,
+    "threshold": 0.5467,
+    "fired": true,
+    "verdict": "THROW AWAY"
+  },
+  "cells": {
+    "kevinsawicki-http-request|200": {
+      "project": "kevinsawicki-http-request",
+      "prefix": 200,
+      "n": 163,
+      "n_pos": 15,
+      "control_auc": 1.0,
+      "model_auc_raw": 0.0,
+      "model_auc_calibrated": 0.5,
+      "n_distinct_raw": 2,
+      "n_distinct_calibrated": 1
+    },
+    "square-okhttp|200": {
+      "project": "square-okhttp",
+      "prefix": 200,
+      "n": 810,
+      "n_pos": 100,
+      "control_auc": 0.49667605633802814,
+      "model_auc_raw": 0.48811267605633807,
+      "model_auc_calibrated": 0.49745070422535215,
+      "n_distinct_raw": 15,
+      "n_distinct_calibrated": 3
+    },
+    "tootallnate-java-websocket|200": {
+      "project": "tootallnate-java-websocket",
+      "prefix": 200,
+      "n": 145,
+      "n_pos": 23,
+      "control_auc": 0.8478260869565217,
+      "model_auc_raw": 0.4347826086956522,
+      "model_auc_calibrated": 0.6086956521739131,
+      "n_distinct_raw": 6,
+      "n_distinct_calibrated": 2
+    },
+    "kevinsawicki-http-request|2000": {
+      "project": "kevinsawicki-http-request",
+      "prefix": 2000,
+      "n": 163,
+      "n_pos": 15,
+      "control_auc": 1.0,
+      "model_auc_raw": 1.0,
+      "model_auc_calibrated": 1.0,
+      "n_distinct_raw": 1,
+      "n_distinct_calibrated": 2
+    },
+    "square-okhttp|2000": {
+      "project": "square-okhttp",
+      "prefix": 2000,
+      "n": 810,
+      "n_pos": 20,
+      "control_auc": 0.7897151898734176,
+      "model_auc_raw": 0.6967088607594937,
+      "model_auc_calibrated": 0.7322151898734177,
+      "n_distinct_raw": 14,
+      "n_distinct_calibrated": 3
+    },
+    "tootallnate-java-websocket|2000": {
+      "project": "tootallnate-java-websocket",
+      "prefix": 2000,
+      "n": 145,
+      "n_pos": 21,
+      "control_auc": 0.999231950844854,
+      "model_auc_raw": 0.5261136712749616,
+      "model_auc_calibrated": 0.6190476190476191,
+      "n_distinct_raw": 7,
+      "n_distinct_calibrated": 4
+    }
+  },
+  "comparison": {
+    "kevinsawicki-http-request|200": {
+      "control": 1.0,
+      "model_calibrated": 0.5,
+      "model_raw": 0.0,
+      "delta": -0.5,
+      "winner": "control",
+      "n_distinct_calibrated": 1
+    },
+    "square-okhttp|200": {
+      "control": 0.49667605633802814,
+      "model_calibrated": 0.49745070422535215,
+      "model_raw": 0.48811267605633807,
+      "delta": 0.0007746478873240092,
+      "winner": "tie",
+      "n_distinct_calibrated": 3
+    },
+    "tootallnate-java-websocket|200": {
+      "control": 0.8478260869565217,
+      "model_calibrated": 0.6086956521739131,
+      "model_raw": 0.4347826086956522,
+      "delta": -0.23913043478260865,
+      "winner": "control",
+      "n_distinct_calibrated": 2
+    },
+    "kevinsawicki-http-request|2000": {
+      "control": 1.0,
+      "model_calibrated": 1.0,
+      "model_raw": 1.0,
+      "delta": 0.0,
+      "winner": "tie",
+      "n_distinct_calibrated": 2
+    },
+    "square-okhttp|2000": {
+      "control": 0.7897151898734176,
+      "model_calibrated": 0.7322151898734177,
+      "model_raw": 0.6967088607594937,
+      "delta": -0.057499999999999885,
+      "winner": "control",
+      "n_distinct_calibrated": 3
+    },
+    "tootallnate-java-websocket|2000": {
+      "control": 0.999231950844854,
+      "model_calibrated": 0.6190476190476191,
+      "model_raw": 0.5261136712749616,
+      "delta": -0.380184331797235,
+      "winner": "control",
+      "n_distinct_calibrated": 4
+    },
+    "_summary": {
+      "model_wins": 0,
+      "ties": 2,
+      "control_wins": 4
+    }
+  },
+  "distinguishability": {
+    "cell": "square-okhttp|200",
+    "method": "bootstrap, 4000 resamples",
+    "control_auc": 0.4967,
+    "control_ci95": [
+      0.4647,
+      0.5331
+    ],
+    "control_contains_0_5": true,
+    "note": "in the decision cell neither predictor is distinguishable from chance. The cell was chosen because the control was dead there; nothing works there."
+  },
+  "conclusion": "Withdrawn. The GRU never beats the prefix-failure count in any of six cells: control wins 4, ties 2, loses 0. The pre-registered criterion required 0.5467 on square-okhttp/200 and the model scored 0.4975. A free sum() over a list is a better sequence observer than a trained GRU on this data."
+}
