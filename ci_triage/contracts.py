@@ -167,3 +167,59 @@ def case_level(run_results, credible=0.5, min_coverage=0.5):
     return {"decision": Decision.SHIP, "driver": None,
             "rule": "no test is credibly a real defect and coverage is adequate",
             "coverage": coverage}
+
+
+# --- slice 12: the explanation layer -----------------------------------------------------
+
+def explain(records, verdict, probability=None):
+    """Template-bound account of the BASIS for a verdict. It never asserts the verdict.
+
+    Every field is filled from the Evidence records; nothing is composed. See
+    design/12-slm-and-the-ledger.md -- the explainer states the basis, never the belief, so
+    the account stays true even when the verdict is wrong.
+    """
+    usable = [r for r in records if r.state is State.OBSERVED and r.probability is not None]
+    collapsed = collapse_correlated(records)
+    survivors = {r.observer for r in collapsed}
+    no_ev = [r for r in records if r.state is State.NO_EVIDENCE]
+
+    basis = max(collapsed, key=_informativeness) if collapsed else None
+    inert = [r.observer for r in usable if abs(r.probability - 0.5) < 0.01]
+    suppressed = [{"observer": r.observer, "cause_group": r.cause_group}
+                  for r in usable if r.observer not in survivors]
+
+    spread = (max(r.probability for r in collapsed) - min(r.probability for r in collapsed)
+              if len(collapsed) > 1 else 0.0)
+    if not collapsed or no_ev and not usable:
+        level = "THIN"
+    elif spread > 0.4:
+        level = "SPLIT"
+    elif len(collapsed) < 2:
+        level = "THIN"
+    else:
+        level = "CONFIDENT"
+
+    out = {
+        "basis": basis.observer if basis else None,
+        "basis_probability": basis.probability if basis else None,
+        "calibrated": basis.calibrated if basis else None,
+        "corroborated_by": sorted(r.observer for r in collapsed
+                                  if basis and r.observer != basis.observer
+                                  and abs(r.probability - basis.probability) <= 0.1),
+        "contradicted_by": sorted(r.observer for r in collapsed
+                                  if basis and r.observer != basis.observer
+                                  and abs(r.probability - basis.probability) > 0.1),
+        "voices": len(collapsed),
+        "suppressed": suppressed,
+        "inert": sorted(inert),
+        "no_evidence": sorted(r.observer for r in no_ev),
+        "evidence_level": level,
+    }
+    # trace: every emitted field -> the record field it came from
+    out["trace"] = {k: "Evidence." + v for k, v in {
+        "basis": "observer", "basis_probability": "probability", "calibrated": "calibrated",
+        "corroborated_by": "observer", "contradicted_by": "observer",
+        "voices": "cause_group", "suppressed": "cause_group", "inert": "probability",
+        "no_evidence": "state", "evidence_level": "state+probability",
+    }.items()}
+    return out
