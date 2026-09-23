@@ -1,0 +1,101 @@
+{
+  "scope": "square-okhttp only. kevinsawicki (15 tests) and tootallnate (23) are entirely flaky, so a two-class index exists for one project. NOT comparable to precomputed/retrieval-eval.json (17 projects).",
+  "corpus": {
+    "n": 202,
+    "n_flaky": 100,
+    "n_deterministic": 102,
+    "n_distinct_messages": 19,
+    "note": "202 tests but 19 distinct messages -- the effective sample size is ~19"
+  },
+  "majority_baseline": 0.504950495049505,
+  "evaluations_retrieval": {
+    "leave_one_test_out|k=1": {
+      "mode": "leave_one_test_out",
+      "k": 1,
+      "n_scored": 202,
+      "precision_at_k": 0.9900990099009901,
+      "mean_distinct_tests": 1.0,
+      "mean_vote": 0.48514851485148514
+    },
+    "leave_one_test_out|k=3": {
+      "mode": "leave_one_test_out",
+      "k": 3,
+      "n_scored": 202,
+      "precision_at_k": 0.9801980198019802,
+      "mean_distinct_tests": 3.0,
+      "mean_vote": 0.4933993399339934
+    },
+    "leave_one_test_out|k=5": {
+      "mode": "leave_one_test_out",
+      "k": 5,
+      "n_scored": 202,
+      "precision_at_k": 0.9851485148514851,
+      "mean_distinct_tests": 5.0,
+      "mean_vote": 0.49603960396039604
+    },
+    "leave_one_test_out|k=10": {
+      "mode": "leave_one_test_out",
+      "k": 10,
+      "n_scored": 202,
+      "precision_at_k": 0.9851485148514851,
+      "mean_distinct_tests": 10.0,
+      "mean_vote": 0.498019801980198
+    },
+    "leave_one_class_out|k=1": {
+      "mode": "leave_one_class_out",
+      "k": 1,
+      "n_scored": 202,
+      "precision_at_k": 0.9851485148514851,
+      "mean_distinct_tests": 1.0,
+      "mean_vote": 0.5
+    },
+    "leave_one_class_out|k=3": {
+      "mode": "leave_one_class_out",
+      "k": 3,
+      "n_scored": 202,
+      "precision_at_k": 0.9851485148514851,
+      "mean_distinct_tests": 3.0,
+      "mean_vote": 0.5
+    },
+    "leave_one_class_out|k=5": {
+      "mode": "leave_one_class_out",
+      "k": 5,
+      "n_scored": 202,
+      "precision_at_k": 0.9851485148514851,
+      "mean_distinct_tests": 5.0,
+      "mean_vote": 0.4821782178217822
+    },
+    "leave_one_class_out|k=10": {
+      "mode": "leave_one_class_out",
+      "k": 10,
+      "n_scored": 202,
+      "precision_at_k": 0.9851485148514851,
+      "mean_distinct_tests": 10.0,
+      "mean_vote": 0.4930693069306931
+    }
+  },
+  "controls": {
+    "majority": 0.505,
+    "substring_setSNIServerNames": 0.9851,
+    "exact_message_match_loco": {
+      "precision": 0.994,
+      "n_scored": 166
+    },
+    "tfidf_char_ngram_5nn_loco": 0.9851,
+    "minilm_embeddings_5nn_loco": 0.9851
+  },
+  "shipped_component": {
+    "name": "MessageLookup",
+    "method": "exact failure-message lookup, abstains on unseen",
+    "coverage": 0.8217821782178217,
+    "n_abstained": 36,
+    "precision_on_covered": 0.9939759036144579,
+    "why": "identical accuracy to MiniLM embeddings, no model, no index, no staleness"
+  },
+  "cross_project": {
+    "performable": false,
+    "reason": "Holding out square-okhttp leaves an index of 38 tests that are entirely flaky -- a single-class index, which the observer refuses. Holding out either other project leaves a single-class QUERY set, so precision@k is 1.0 regardless of what retrieval does. Both directions measure class composition, not retrieval.",
+    "scored": null
+  },
+  "conclusion": "Retrieval works and is redundant. MiniLM embeddings + 5-NN score 0.9851 against a 0.5050 majority baseline -- and a single substring check scores 0.9851, identically. 100 of 102 deterministic tests share one failure message, so the task has one decision boundary that every method finds. The exact-message lookup ships; retrieval is recorded as tested and redundant."
+}
