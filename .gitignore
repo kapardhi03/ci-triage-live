@@ -9,3 +9,4 @@ progress.html
 .DS_Store
 .ci-lab/progress.json
 .env
+.claude
