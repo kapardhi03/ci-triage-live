@@ -243,3 +243,99 @@ show it. **The clamp rate is therefore a reported result, not merely a safety me
 ## Result
 
 *(appended after the run — empty at the time of writing)*
+
+**Appended 2026-09-29 after the arbiter run. Nothing above this line was edited.**
+
+## The result
+
+| strategy | accuracy | ECE | coverage | n |
+|---|---|---|---|---|
+| A most-confident | 0.9554 | 0.0435 | 100% | 202 |
+| B mean | 0.9554 | 0.0914 | 100% | 202 |
+| C threshold | 0.9554 | 0.0446 | 100% | 202 |
+| D escalate-on-disagreement | 0.9940 | 0.0071 | 82.2% | 166 |
+| **E0 null arbiter** (control) | **0.9554** | **0.0435** | 100% | 202 |
+| **E LLM arbiter** (`gpt-4o-mini`) | **0.9904** | **0.0096** | **51.5%** | 104 |
+
+Frozen hash **`305d8ece8a0fa240`** verified — the inputs were rebuilt from the raw archives
+by `ci_triage/evidence.py` and reproduce the case list exactly.
+
+**Read naively, E has the second-best accuracy and the second-best calibration in the
+table.** It is withdrawn anyway.
+
+## Both abandonment conditions fired
+
+### Condition 1 — it ties the null control
+
+```
+arbiter    on its own 104 covered cases:  0.9904
+null stub  on the SAME 104 cases:         0.9904
+```
+
+**Identical.** A stub that returns the most-confident collapsed voice — no model, no
+network, no cost — decides those cases exactly as well. The phases 07/08/09 finding for the
+fourth time: a constant tied the tabular model, a `sum()` beat the GRU, one `if`-statement
+tied MiniLM, and now a free stub ties an LLM.
+
+### Condition 3 — the ship-direction clamp fired on 24.3%
+
+**Threshold was ~5%. Measured: 49 of 202.**
+
+The model's raw output distribution: **`AGREE_FLAKY` 121, `ESCALATE` 49,
+`AGREE_REAL_DEFECT` 32.** It wants to say flaky.
+
+```
+model said AGREE_FLAKY against REAL_DEFECT evidence :   49   (24.3%)
+  of those, genuine REAL DEFECTS                    :   44
+  unclamped: 44 x ~40h  =  1,760 engineer-hours of shipped bugs, on 202 cases
+```
+
+**The only thing preventing that was a guard the model could not see.**
+
+And the coverage is not what it looks like. Reported 51.5%, but of the 98 abstentions
+**exactly half are the clamp, not the model's judgement** — 49 escalations it chose, 49
+refusals imposed on it. Its willingness to decline is overstated by a factor of two.
+
+## Why this is the result the condition was written for
+
+Condition 3 was recorded before the run as:
+
+> *"Accuracy could look healthy while the model systematically pushes toward the expensive
+> error, and nothing in the accuracy number would show it."*
+
+That is precisely what happened. **Accuracy 0.9904 and ECE 0.0096 are the second-best
+figures in the table, and they are produced by a component that tried to ship 44 real
+defects.** No metric on the phase 02 ladder would have revealed it. The clamp rate is the
+only instrument that sees it, and it exists only because the rule was written down first.
+
+## The pre-registered prediction was wrong, and it does not matter
+
+`99516bd` predicted **2nd on accuracy, near-worst on calibration.** Measured, E would rank
+**1st or 2nd on both** if the headline numbers were read at face value. The prediction is
+kept unedited and recorded as wrong.
+
+It does not change the outcome, because the strategy is withdrawn on **safety**, not on
+rank — which is itself the finding. A ranking table would have promoted it.
+
+## Reproduction
+
+```bash
+uv run python -m ci_triage.evidence        # rebuild frozen inputs from data/raw, verify hash
+uv run python -m ci_triage.arbiter_run     # run E0 and E, write results + every raw response
+uv run pytest tests/test_fusion.py -q      # the clamp invariant, no network
+```
+
+`gpt-4o-mini`, temperature 0, 202 calls ≈ **$0.023**. Every raw response is stored in
+`artifacts/results/arbiter-responses.json`.
+
+## What this does not prove
+
+- **One model, one prompt, one temperature.** A different model, or a prompt that argued
+  harder for caution, might clamp less. Untested.
+- **49.5% base rate, not deployment's 3.16%.** The ship-direction rule is *more* important at
+  3.16%, not less, so the concern does not shrink — but the numbers do not transfer.
+- **The clamp is a wrapper, not a property of the model.** Nothing here shows the arbiter
+  could be made safe; it shows that this one, unguarded, was not.
+- **Non-reproducible by construction.** Temperature 0 and a pinned model string reduce
+  variance; they do not guarantee identical output. The stored responses make the run
+  auditable, not re-derivable.

@@ -42,3 +42,29 @@ All kept unedited.
 | `divergence_threshold = 0.1` was not derived | It sets D's coverage and therefore D's entire measured advantage. Chosen, not justified. |
 | is the architecture worth keeping? | Three observers were built, three were matched by free alternatives, and fusion adds nothing over one of them. Phase 13 has to answer whether this system should exist in this form. |
 | no arbiter rule was tested against a live model | The forbidden list is enforced by design and by prompt audit, not by an adversarial attempt to get a model to violate it. |
+
+## Extension (2026-09-29): the arbiter, measured
+
+| Was | Now | Statement | Evidence |
+|---|---|---|---|
+| **known-unknown** | **known** | **the LLM arbiter was measured.** `gpt-4o-mini`, temp 0, 202 calls, ~$0.023 | artifacts/results/fusion.json |
+| unknown | known | it posts **acc 0.9904, ECE 0.0096** — read naively, the best calibration of any completed strategy | artifacts/results/fusion.json |
+| unknown | known | **it is withdrawn anyway.** Both pre-registered abandonment conditions fired | experiments/11-fusion-comparison.md |
+| unknown | known | **it ties the null control exactly**: 0.9904 vs 0.9904 on the same 104 covered cases | artifacts/results/fusion.json |
+| unknown | known | **the ship-direction clamp fired on 49/202 = 24.3%** against a ~5% threshold | artifacts/results/arbiter-responses.json |
+| unknown | known | **44 of those 49 were genuine real defects** — unclamped, ~1,760 engineer-hours of shipped bugs on 202 cases | artifacts/results/fusion.json |
+| unknown | known | its raw output distribution is `AGREE_FLAKY` 121 / `ESCALATE` 49 / `AGREE_REAL_DEFECT` 32 — **it wants to say flaky** | artifacts/results/arbiter-responses.json |
+| unknown | known | **half its reported 51.5% coverage is the guard, not its judgement** — 49 chosen escalations, 49 imposed refusals | artifacts/results/fusion.json |
+| unknown | known | **no metric on the phase 02 ladder detects this.** The clamp rate is the only instrument that sees it, and it exists only because the rule was written first | ai-ledger/11-fusion-and-arbiter.md |
+| assumed | **wrong** | the phase 11 inputs were **not** reproducible — they lived only in a scratchpad, contradicting the claim in `.ci-lab/interviews/13.md` | ai-ledger/11-fusion-and-arbiter.md |
+| unknown | known | `ci_triage/evidence.py` rebuilds them from `data/raw/` and reproduces frozen hash `305d8ece8a0fa240` exactly | ci_triage/evidence.py |
+| unknown | known | the pre-registered prediction (2nd on accuracy, near-worst on calibration) is **wrong** — and irrelevant, since withdrawal is on safety not rank | experiments/11-fusion-comparison.md |
+
+### Still open after the extension
+
+| Statement | Why |
+|---|---|
+| one model, one prompt, one temperature | A different model, or a prompt arguing harder for caution, might clamp less. Untested. |
+| the clamp is a wrapper, not a model property | Nothing shows the arbiter *could* be made safe — only that this one, unguarded, was not. |
+| 49.5% base rate, not deployment's 3.16% | The ship-direction rule matters **more** at 3.16%, but these numbers do not transfer. |
+| not re-derivable | Temperature 0 and a pinned model reduce variance; they do not guarantee identical output. Stored responses make it auditable, not reproducible. |

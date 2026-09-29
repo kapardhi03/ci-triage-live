@@ -137,3 +137,90 @@ def test_coverage_is_reported_so_abstention_cannot_buy_accuracy():
     out = evaluate_strategy(strategy_escalate_on_disagreement, cases, [1, 1, 0, 1])
     assert out["coverage"] < 1.0
     assert out["n_covered"] < out["n_total"]
+
+
+# --- the arbiter: the ship-direction clamp ------------------------------------------------
+
+from ci_triage.fusion import (
+    AGREE_FLAKY, AGREE_REAL_DEFECT, ESCALATE, arbiter_decide, null_arbiter,
+    render_arbiter_prompt, strategy_llm_arbiter,
+)
+
+
+class StubClient:
+    """Returns a fixed word. No network. The point is what the wrapper does with it."""
+
+    def __init__(self, word):
+        self.word = word
+        self.prompts = []
+        outer = self
+
+        class _Completions:
+            def create(self, model, temperature, max_tokens, messages):
+                outer.prompts.append(messages[0]["content"])
+                msg = type("M", (), {"content": outer.word})()
+                return type("R", (), {"choices": [type("C", (), {"message": msg})()]})()
+
+        self.chat = type("Chat", (), {"completions": _Completions()})()
+
+
+def real_defect_records():
+    """Collapsed evidence points REAL_DEFECT: the surviving voice is p(flaky)=0.05."""
+    return [ev("tabular", "ssl-jvm", 0.05), ev("sequence", "run-history", 0.30)]
+
+
+def test_arbiter_cannot_move_a_case_toward_ship():
+    """THE invariant. A fluent model saying FLAKY against REAL_DEFECT evidence is refused.
+
+    Under the phase 01 table a wrong "flaky" costs ~40h against ~3h for a needless hold, so
+    the arbiter may confirm or escalate and never relax caution. Without the clamp the
+    wrapper would return 1.0 here and the expensive error would ship.
+    """
+    stats = {}
+    out = arbiter_decide(real_defect_records(), StubClient(AGREE_FLAKY), stats=stats)
+    assert out == ESCALATE, "the arbiter moved a case toward SHIP"
+    assert stats["clamped"] == 1, "the clamp fired but was not counted"
+
+    # and the strategy wrapper abstains rather than emitting a flaky score
+    assert strategy_llm_arbiter(real_defect_records(), client=StubClient(AGREE_FLAKY),
+                                stats={}) is None
+
+
+def test_arbiter_may_confirm_the_safe_direction():
+    """The clamp must be directional, not a blanket refusal, or it proves nothing."""
+    stats = {}
+    out = arbiter_decide(real_defect_records(), StubClient(AGREE_REAL_DEFECT), stats=stats)
+    assert out == AGREE_REAL_DEFECT
+    assert "clamped" not in stats
+
+    flaky_evidence = [ev("lookup", "ssl-jvm", 0.95)]
+    assert arbiter_decide(flaky_evidence, StubClient(AGREE_FLAKY), stats={}) == AGREE_FLAKY
+
+
+def test_arbiter_prompt_leaks_no_identity_or_label():
+    """design/11's forbidden-to-see list, asserted against the rendered artefact."""
+    prompt = render_arbiter_prompt(real_defect_records())
+    for forbidden in ("T.a", "okhttp", "IsFlaky", "label", "HttpOverSpdy",
+                      "A_most_confident", "D_escalate"):
+        assert forbidden not in prompt, f"prompt leaked {forbidden!r}"
+
+
+def test_arbiter_refuses_unparseable_output_rather_than_guessing():
+    stats = {}
+    with pytest.raises(ValueError, match="unparseable"):
+        arbiter_decide(real_defect_records(), StubClient("I think it's probably flaky?"),
+                       stats=stats)
+    assert stats["unparseable"] == 1
+
+
+def test_null_arbiter_needs_no_client():
+    """The control must be free, or it is not a control."""
+    assert null_arbiter(real_defect_records()) == pytest.approx(0.05)
+    assert null_arbiter([ev("a", "g", 0.95)]) == pytest.approx(0.95)
+
+
+def test_escalate_is_reported_as_coverage_not_dropped():
+    out = evaluate_strategy(strategy_llm_arbiter,
+                            [real_defect_records(), real_defect_records()], [0, 1],
+                            client=StubClient(ESCALATE), stats={})
+    assert out["n_covered"] == 0 and out["coverage"] == 0.0

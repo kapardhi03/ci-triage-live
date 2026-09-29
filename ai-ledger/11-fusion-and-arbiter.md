@@ -73,3 +73,65 @@ finding almost nothing to operate on.
 No arbiter call was made and no arbiter result is claimed. The prompt is rendered, printed in
 full, and audited against the forbidden-to-see list — the label, test name, class name,
 project and other strategies' outputs are all absent — but nothing consumed it.
+
+---
+
+## Extension (2026-09-29): the arbiter ran
+
+### Rejected proposal
+
+**Proposal:** Report E as the best strategy in the table. Accuracy 0.9904 and ECE 0.0096 are
+second only to D on accuracy and the best calibration of any completed strategy, on the same
+frozen 202 cases with the same metric implementation. It earned its place.
+
+**Verdict:** Rejected. **Withdrawn**, on two pre-registered grounds.
+
+**Reason:** Those numbers are produced by a component that tried to move **49 of 202 cases**
+toward FLAKY against REAL_DEFECT evidence. **44 of those 49 were genuine real defects** —
+unclamped, roughly **1,760 engineer-hours** of shipped bugs at the phase 01 price, on 202
+cases. The only thing that stopped it was a guard it could not see.
+
+And on its own covered set it is **exactly tied** with a free stub: 0.9904 against 0.9904 on
+the same 104 cases. It adds nothing and costs a safety mechanism.
+
+Reporting it as the winner would have been the single worst act of this project, because
+every metric on the phase 02 ladder agrees it is excellent.
+
+### What the clamp rate caught that nothing else could
+
+The abandonment condition was written before the run:
+
+> *"Accuracy could look healthy while the model systematically pushes toward the expensive
+> error, and nothing in the accuracy number would show it."*
+
+Measured: the model's raw distribution was **`AGREE_FLAKY` 121, `ESCALATE` 49,
+`AGREE_REAL_DEFECT` 32**. It wants to say flaky. No metric in this repository sees that —
+accuracy cannot, ECE cannot, Brier cannot, cost-weighted risk cannot, because the clamp had
+already converted the unsafe calls into abstentions before scoring.
+
+**The instrument existed only because the rule was written down first.** That is the
+strongest single argument this project has produced for hypothesis-before-evidence.
+
+### A reproducibility failure found in passing
+
+The phase 11 observer probabilities existed **only in a session scratchpad**. They were gone
+when this extension started, and `.ci-lab/interviews/13.md` had claimed *"every number in
+`artifacts/results/` was produced by a command in the repository"* — true of the committed
+artifacts, false of the inputs that produced the fusion comparison.
+
+Fixed by `ci_triage/evidence.py`, which rebuilds them from `data/raw/` and verifies the
+frozen hash. It reproduces `305d8ece8a0fa240` exactly, so the phase 11 result is now
+regenerable rather than asserted. The claim in the interview was wrong when written and is
+corrected here rather than edited there.
+
+### Ponytail pass
+
+Removed from the first draft: a `Arbiter` class holding client, model and stats (replaced by
+three functions and a dict); a retry/backoff wrapper (the SDK retries, and a failure should
+surface as `incomplete` rather than be papered over); a `--model` CLI flag with no second
+user; and a separate prompt-template file (the renderer is twelve lines and belongs beside
+the thing it serves).
+
+Kept deliberately: the `stats` dict threaded through, because the clamp count is a **reported
+result** and not merely instrumentation — hiding it inside the function would have hidden the
+finding.
