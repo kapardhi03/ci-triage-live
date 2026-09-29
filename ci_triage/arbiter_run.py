@@ -74,30 +74,50 @@ def main():
     client = make_openai_client()
     if client is None:
         raise SystemExit("no OPENAI_API_KEY in .env or environment")
-    stats = {}
-    arb = score(evaluate_strategy(strategy_llm_arbiter, per_case, y,
-                                  client=client, model=ARBITER_MODEL, stats=stats), y)
-    if arb.get("status") == "complete":
-        print(f"  E  arbiter        acc {arb['accuracy']:.4f}  ECE {arb['ece']:.4f}  "
-              f"coverage {arb['coverage']:.1%}")
-    else:
-        print(f"  E  arbiter        INCOMPLETE -- {arb.get('reason')}")
-
     n = len(d["cases"])
-    clamped = stats.get("clamped", 0)
-    print(f"\n  ship-direction clamp fired {clamped}/{n} = {clamped/n:.1%} "
-          f"(abandonment threshold ~5%)")
+    runs = {}
+    for label, cautious in (("E  baseline ", False), ("Ec cautious ", True)):
+        stats = {}
+        out = score(evaluate_strategy(strategy_llm_arbiter, per_case, y, client=client,
+                                      model=ARBITER_MODEL, stats=stats,
+                                      cautious=cautious), y)
+        clamped = stats.get("clamped", 0)
+        out["clamp_fired"], out["clamp_rate"] = clamped, clamped / n
+        runs[label.strip()] = (out, stats)
+        if "accuracy" in out:
+            print(f"  {label} acc {out['accuracy']:.4f}  ECE {out['ece']:.4f}  "
+                  f"coverage {out['coverage']:.1%}  clamp {clamped}/{n} = {clamped/n:.1%}")
+        elif out.get("status") == "complete":
+            # abstained on every case: coverage 0, so accuracy and ECE are undefined.
+            # Reported as such rather than scored on an empty set.
+            out["accuracy"] = out["ece"] = None
+            print(f"  {label} acc n/a  ECE n/a  coverage {out['coverage']:.1%} "
+                  f"(abstained on all {n})  clamp {clamped}/{n} = {clamped/n:.1%}")
+        else:
+            print(f"  {label} INCOMPLETE -- {out.get('reason')}")
+
+    arb, stats = runs["E  baseline"]
+    caut, cstats = runs["Ec cautious"]
+    print(f"\n  clamp rate  baseline {arb['clamp_rate']:.1%}  ->  "
+          f"cautious {caut['clamp_rate']:.1%}   (predicted < 5%)")
+    clamped = arb["clamp_fired"]
     RESPONSES.write_text(json.dumps(
         {"model": ARBITER_MODEL, "temperature": 0, "frozen_hash": h,
-         "cases": d["cases"], "raw": stats.get("raw", []),
-         "clamped": clamped, "unparseable": stats.get("unparseable", 0)}, indent=2) + "\n")
+         "cases": d["cases"],
+         "baseline": {"raw": stats.get("raw", []), "clamped": clamped,
+                      "unparseable": stats.get("unparseable", 0)},
+         "cautious": {"raw": cstats.get("raw", []),
+                      "clamped": cstats.get("clamped", 0),
+                      "unparseable": cstats.get("unparseable", 0)}}, indent=2) + "\n")
     print(f"  wrote {RESPONSES}")
 
     fusion = json.loads(FUSION.read_text())
-    for key, out in (("E0_null_arbiter", null), ("E_llm_arbiter", arb)):
+    for key, out in (("E0_null_arbiter", null), ("E_llm_arbiter", arb),
+                     ("Ec_llm_arbiter_cautious", caut)):
         fusion["strategies"][key] = {
             k: out[k] for k in ("status", "accuracy", "ece", "coverage", "n_covered",
-                                "n_total") if k in out}
+                                "n_total", "clamp_fired", "clamp_rate")
+            if k in out}
     fusion["arbiter"] = {
         "status": arb.get("status"), "model": ARBITER_MODEL, "temperature": 0,
         "checked": True, "ranked": arb.get("status") == "complete",

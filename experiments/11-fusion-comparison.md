@@ -390,3 +390,77 @@ One model, one cautious phrasing, one temperature. A drop would show *this* word
 *this* model — not that the arbiter is safe, and not that the clamp could be removed. The
 clamp is what makes the measurement possible; it is not a result about whether the clamp is
 needed.
+
+**Appended 2026-09-29 after the cautious variant ran. Nothing above this line was edited.**
+
+## The result
+
+```
+E0 null control   acc 0.9554   ECE 0.0435   coverage 100.0%   clamp   n/a
+E  baseline       acc 0.9901   ECE 0.0099   coverage  50.0%   clamp 43/202 = 21.3%
+Ec cautious       acc   n/a    ECE   n/a    coverage   0.0%   clamp  0/202 =  0.0%
+```
+
+**The cautious variant output `ESCALATE` 202 times out of 202.** Not one decision.
+
+```
+baseline raw:  AGREE_FLAKY 111 | ESCALATE 58 | AGREE_REAL_DEFECT 33
+cautious raw:  ESCALATE 202
+```
+
+## The prediction's number was right and its verdict was wrong
+
+Predicted **< 5%**. Measured **0.0%**. The band was hit exactly — **by total abstention.**
+
+The pre-registered interpretation said *"< 5% → prompting fixes it. The tendency was an
+instruction gap, not a model property."* **Refuted.** Nothing was fixed. A component that
+escalates on every case has zero coverage and decides nothing; it is the
+**ESCALATE-everything constant**.
+
+Phase 02's lesson for the fifth time: the safe-looking policy scores perfectly on the safety
+metric by refusing to do the job. A constant predictor was 96.84% accurate in phase 04, the
+tabular model *was* the constant in phase 07, and now the "cautious" arbiter is a constant
+too.
+
+## The interpretation rule had the flaw it was written to catch
+
+The rule measured **only the clamp rate**. It had no coverage floor, so a policy that never
+decides anything satisfies it perfectly.
+
+That is the fourth instance in this repository of a check that can be passed without the
+thing it checks being true — after the circular leak test (phase 04), the self-referential
+cost test (phase 07), and the unsatisfiable keep criterion (phase 08). **This one was
+written during the phase whose entire subject is that failure mode**, and it still happened.
+
+The rule should have read: *clamp rate < 5% **at coverage ≥ 50%**.*
+
+## The baseline is not a stable measurement
+
+Three runs, identical configuration — `gpt-4o-mini`, temperature 0, same prompt, same 202
+frozen cases:
+
+| run | clamp |
+|---|---|
+| 1 | 49/202 = **24.3%** |
+| 2 | 36/202 = **17.8%** |
+| 3 | 43/202 = **21.3%** |
+
+**Mean 21.1%, sd 3.3, range 6.5 points.**
+
+Extension 1's headline 24.3% was **over-precise** and should be read as **~21% ± 3**. The
+limitation recorded before that run — *"temperature 0 reduces variance; it does not
+guarantee identical output"* — is now measured rather than asserted, and it is larger than
+I expected.
+
+## What this settles, and what it does not
+
+**It does not settle the question it was written to answer.** "Bad idea or badly prompted"
+remains open, because **neither prompt produces a usable component**: the unsafe one tries to
+ship real defects on ~21% of cases, and the safe one does no work at all.
+
+What it does establish is narrower and worth more: **the two failure modes are reachable
+from a single sentence of prompt text**, and the metrics cannot tell them apart. Accuracy and
+ECE were excellent for the dangerous variant and undefined for the useless one.
+
+Untested: a prompt between these two, a coverage floor in the instruction, a different model,
+and whether any of it survives at deployment's 3.16% base rate.

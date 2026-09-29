@@ -139,7 +139,7 @@ def make_openai_client(env=None):
     return OpenAI(api_key=key)
 
 
-def render_arbiter_prompt(records):
+def render_arbiter_prompt(records, cautious=False):
     """Every line comes from an Evidence record. No identity, no label, no strategy output."""
     lines = ["You are arbitrating between automated observers about one CI test failure.",
              "", "EVIDENCE RECORD"]
@@ -165,7 +165,24 @@ def render_arbiter_prompt(records):
     lines += ["", "YOU MAY OUTPUT EXACTLY ONE WORD:",
               f"  {AGREE_FLAKY}        - the surviving evidence supports flaky",
               f"  {AGREE_REAL_DEFECT}  - the surviving evidence supports a real defect",
-              f"  {ESCALATE}           - a human should decide", "",
+              f"  {ESCALATE}           - a human should decide"]
+    if cautious:
+        # extension 2: the ONLY variable. Everything above is byte-identical.
+        lines += ["", "COST OF BEING WRONG, from this organisation's incident data:",
+                  "  calling a real defect FLAKY   -> the bug ships to customers   "
+                  "~40 engineer-hours",
+                  "  calling a flaky test a DEFECT -> a release is held for nothing "
+                  "~3 engineer-hours",
+                  "  ESCALATE                      -> an engineer investigates      "
+                  "~1.5 engineer-hours", "",
+                  f"{AGREE_FLAKY} is the expensive mistake. It is roughly 13x costlier "
+                  "than the opposite",
+                  "error and 27x costlier than escalating. Choose it only when the "
+                  "surviving evidence",
+                  "clearly supports it. When the evidence is thin, split, or points the "
+                  "other way,",
+                  f"{ESCALATE} -- escalating is cheap and is not a failure."]
+    lines += ["",
               "YOU MAY NOT output a probability, explain yourself, or cite anything absent",
               "from the record. Reply with the single word only."]
     return "\n".join(lines)
@@ -180,7 +197,8 @@ def _collapsed_direction(records):
     return max(scored, key=lambda r: abs(r.probability - 0.5)).probability
 
 
-def arbiter_decide(records, client, model=ARBITER_MODEL, stats=None):
+def arbiter_decide(records, client, model=ARBITER_MODEL, stats=None,
+                   cautious=False):
     """One case. Returns a category, after the ship-direction clamp.
 
     The clamp is absolute: where collapsed evidence points REAL_DEFECT the arbiter may
@@ -189,7 +207,7 @@ def arbiter_decide(records, client, model=ARBITER_MODEL, stats=None):
     and not only a safety mechanism.
     """
     stats = stats if stats is not None else {}
-    prompt = render_arbiter_prompt(records)
+    prompt = render_arbiter_prompt(records, cautious=cautious)
     resp = client.chat.completions.create(
         model=model, temperature=0, max_tokens=8,
         messages=[{"role": "user", "content": prompt}])
@@ -218,12 +236,14 @@ def null_arbiter(records, **_):
     return _collapsed_direction(records)
 
 
-def strategy_llm_arbiter(records, client=None, model=ARBITER_MODEL, stats=None, **_):
+def strategy_llm_arbiter(records, client=None, model=ARBITER_MODEL, stats=None,
+                         cautious=False, **_):
     """E: hand it to a language model. Raises when no client is configured."""
     if client is None:
         raise RuntimeError(
             "no LLM client configured; this strategy is incomplete and must not be ranked")
-    choice = arbiter_decide(records, client, model=model, stats=stats)
+    choice = arbiter_decide(records, client, model=model, stats=stats,
+                            cautious=cautious)
     if choice == ESCALATE:
         return None                     # abstain -- reported as coverage, not dropped
     return 1.0 if choice == AGREE_FLAKY else 0.0

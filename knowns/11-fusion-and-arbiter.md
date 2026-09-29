@@ -68,3 +68,24 @@ All kept unedited.
 | the clamp is a wrapper, not a model property | Nothing shows the arbiter *could* be made safe — only that this one, unguarded, was not. |
 | 49.5% base rate, not deployment's 3.16% | The ship-direction rule matters **more** at 3.16%, but these numbers do not transfer. |
 | not re-derivable | Temperature 0 and a pinned model reduce variance; they do not guarantee identical output. Stored responses make it auditable, not reproducible. |
+
+## Extension 2 (2026-09-29): the cautious prompt
+
+| Was | Now | Statement | Evidence |
+|---|---|---|---|
+| unknown | known | **the cautious prompt makes the arbiter a constant**: `ESCALATE` 202/202, coverage 0.0%, accuracy and ECE undefined | artifacts/results/fusion.json |
+| unknown | known | clamp rate **21.3% → 0.0%** — the predicted band was hit **by total abstention** | experiments/11-fusion-comparison.md |
+| unknown | known | the prediction's **number was right and its verdict was refuted**: nothing was fixed, the component stopped working | experiments/11-fusion-comparison.md |
+| assumed | **wrong** | the interpretation rule measured only clamp rate with **no coverage floor**, so a degenerate policy satisfied it — the fourth check in this repo passable without the thing it checks being true, written during the phase about that failure mode | experiments/11-fusion-comparison.md |
+| unknown | known | **the baseline is not stable**: three identical runs give 24.3%, 17.8%, 21.3% — mean 21.1%, sd 3.3, range 6.5 points | artifacts/results/fusion.json |
+| assumed | **over-precise** | extension 1's headline 24.3% should be read as **~21% ± 3** | artifacts/results/fusion.json |
+| unknown | known | **both failure modes are reachable from one sentence of prompt text**, and accuracy/ECE cannot tell them apart — excellent for the dangerous variant, undefined for the useless one | experiments/11-fusion-comparison.md |
+
+### Still open
+
+| Statement | Why |
+|---|---|
+| **"bad idea or badly prompted" is still unsettled** | Neither prompt yields a usable component: the unsafe one ships defects on ~21% of cases, the safe one does no work. The question the extension was written to answer is not answered. |
+| a prompt between the two is untested | Nothing tried a middle wording, or a coverage floor stated in the instruction rather than only in the interpretation rule. |
+| single-run LLM numbers here carry ±3 points | Any future arbiter comparison needs repeated runs, not one. |
+| none of it is tested at 3.16% | These 202 cases are 49.5% positive. |
