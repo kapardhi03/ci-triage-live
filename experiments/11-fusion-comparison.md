@@ -164,3 +164,82 @@ the forbidden-to-see rules against an artefact rather than an intention.
 These 202 cases are 49.5% positive; deployment is 3.16%. Every number above is flattered,
 and D's abstention economics in particular invert: phase 07 measured abstention as a loser
 at 1.5h/row against 0.0957h/row of error at the deployment base rate.
+
+---
+
+# Extension: the arbiter, with real evidence
+
+**Written 2026-09-29, before any arbiter code existed.** The 90-minute challenge. Appended
+to after the run, never edited.
+
+## What changed since the phase 11 run
+
+Nothing about the experiment. An API key became available, so strategy E can complete on
+the same frozen 202 cases. **The case list, the labels, the metric implementation and the
+four completed strategies are untouched** — `sha256[:16] = 305d8ece8a0fa240` must come out
+identical or the run is void.
+
+## The hypothesis is not written now
+
+It was written at commit **`99516bd`**, before any strategy was implemented:
+
+> **E predicted 2nd on accuracy, between C and D. Near-worst on calibration.**
+
+That prediction stands as recorded. Writing a fresh one now, with the other four results on
+screen, would be prediction after the fact wearing a timestamp.
+
+## Setup
+
+- **Model:** `gpt-4o-mini`, temperature 0, pinned model string in the `run_id`.
+- **Cost:** 202 calls × 677 input tokens ≈ **$0.023** at $0.15/$0.60 per 1M
+  ([developers.openai.com/api/docs/pricing](https://developers.openai.com/api/docs/pricing),
+  fetched 2026-09-29). Cost is not a constraint, so this decides on evidence or not at all.
+- **Output mapping:** `AGREE_FLAKY → 1.0`, `AGREE_REAL_DEFECT → 0.0`, `ESCALATE → abstain`.
+  The same shape `C_threshold` and `D_escalate_on_disagreement` already have, scored on the
+  identical metric implementation. Scoring a categorical choice is not inventing a
+  confidence; `design/11`'s ban on manufacturing a probability is intact.
+- **Ship-direction rule, absolute:** where collapsed evidence points `REAL_DEFECT`, the
+  arbiter may confirm or escalate, **never** move toward `FLAKY`. The wrapper refuses; the
+  refusal is counted.
+
+## Recorded limitation, accepted in advance
+
+**An LLM breaks this repository's reproducibility standard.** `run_id` hashes split,
+estimator, features, label, seed and data digest; a model has no seed guarantee, so an
+identical `run_id` no longer implies identical numbers.
+
+Mitigation: temperature 0, the model string inside the `run_id`, and **every raw response
+stored per case**, so the run is *auditable* even when it is not *re-derivable*. This is
+weaker than every other result in the repository and is recorded as such rather than
+presented as equivalent.
+
+## The controls
+
+1. **Strategy D** — the current best, 0.9940 at 82.2% coverage.
+2. **The null arbiter** — a stub returning the most-confident collapsed voice. No model, no
+   cost, no network. **This is the control that matters**, and the one the record says will
+   win: a constant tied the tabular model, a `sum()` beat the GRU, one `if`-statement tied
+   MiniLM.
+
+## Abandonment condition
+
+**Withdraw the arbiter if any of these fire:**
+
+1. **It ties the null control.** Accuracy and ECE within fold noise of the stub → it added
+   nothing, the phases 07/08/09 finding a fourth time, and it ships as `withdrawn` rather
+   than as a strategy.
+2. **It cannot complete all 202.** Timeouts, refusals, or unparseable output on any case →
+   `incomplete` and unranked, the same rule that kept it out of the phase 11 table.
+3. **The ship-direction clamp fires on more than ~5% of cases.** The arbiter is then
+   **unsafe regardless of its accuracy** — it is repeatedly trying to relax caution, and the
+   only thing stopping it is a guard it does not know exists.
+
+Condition 3 is the one that earns its place. Accuracy could look healthy while the model
+systematically pushes toward the expensive error, and nothing in the accuracy number would
+show it. **The clamp rate is therefore a reported result, not merely a safety mechanism.**
+
+---
+
+## Result
+
+*(appended after the run — empty at the time of writing)*
