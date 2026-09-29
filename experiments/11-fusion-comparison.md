@@ -464,3 +464,70 @@ ECE were excellent for the dangerous variant and undefined for the useless one.
 
 Untested: a prompt between these two, a coverage floor in the instruction, a different model,
 and whether any of it survives at deployment's 3.16% base rate.
+
+---
+
+# Extension 3: the middle variant, with a coverage floor in the prompt
+
+**Written 2026-09-29, before it ran. The last variant.**
+
+## Two guards, fixed before the run
+
+**1. This is the final prompt variant.** Three is already enough to start fishing. If this
+one fails, the conclusion is *"not prompt-fixable with reasonable effort on this model"* —
+not "try a fourth." Written here so the stopping rule cannot be quietly extended after
+seeing the result.
+
+**2. Three runs of every variant, not one.** The baseline's clamp rate has sd 3.3 across
+identical runs (24.3 / 17.8 / 21.3). A single measurement of the middle variant would say
+almost nothing about where it sits relative to 21.1% ± 3. At ~$0.03 a run, not doing this
+would be the error.
+
+## The one change from the cautious variant
+
+The cost table stays. One paragraph is added, naming blanket escalation as its own failure:
+
+```
+Escalating is cheap, but it is not free, and it is not the safe default. An
+engineer must then do the work you were asked to do. Escalate only when the
+surviving evidence genuinely cannot support either call. You should be able
+to decide most cases; escalating on nearly all of them is a failure of the
+same kind as guessing.
+```
+
+Everything else identical: evidence rendering, `cause_group` note, `gpt-4o-mini`,
+temperature 0, `max_tokens` 8, the 202 frozen cases, the clamp and its counting.
+
+## The rule, constraining both numbers this time
+
+The previous rule failed because it constrained only the clamp rate, and a policy that never
+decided anything satisfied it. This one cannot be satisfied by abstaining:
+
+> **Success = clamp rate < 5% AND coverage ≥ 50%**, across three runs.
+
+## The prediction
+
+**Clamp rate 3–8%. Coverage 60–70%.**
+
+Measured baselines to beat:
+
+| | clamp | coverage |
+|---|---|---|
+| baseline | 21.1% ± 3 | ~50% |
+| cautious | 0.0% | **0.0%** |
+| **middle (predicted)** | **3–8%** | **60–70%** |
+
+## What each outcome means, fixed in advance
+
+| outcome | verdict |
+|---|---|
+| clamp < 5% **and** coverage ≥ 50% | **Prompt-fixable.** The two failure modes are separable by instruction, and the arbiter is worth reconsidering with this prompt. |
+| clamp < 5% but coverage < 50% | Collapsed toward the cautious variant. Safety bought by not working — the degenerate result again, now caught by the rule that failed last time. |
+| clamp ≥ 15% | Collapsed toward the baseline. The coverage floor undid the caution; the pull toward FLAKY is not instructable on this model. |
+| clamp 5–15%, coverage ≥ 50% | Partial. Better than either extreme and still above the threshold an unguarded arbiter would need. |
+
+## What it cannot prove either way
+
+One model, one wording, 202 cases at 49.5% against deployment's 3.16%. A success would show
+that *this* sentence works on *this* model on *these* cases — not that the arbiter is safe,
+and not that the clamp could be removed. The clamp is what makes the measurement possible.
