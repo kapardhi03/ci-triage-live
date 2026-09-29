@@ -1,0 +1,97 @@
+{
+  "baseline": {
+    "runs": [
+      {
+        "clamp_rate": 0.228,
+        "coverage": 0.5
+      },
+      {
+        "clamp_rate": 0.233,
+        "coverage": 0.525
+      },
+      {
+        "clamp_rate": 0.228,
+        "coverage": 0.515
+      }
+    ],
+    "clamp_mean": 0.229,
+    "clamp_sd": 0.003,
+    "coverage_mean": 0.513,
+    "coverage_sd": 0.012,
+    "source": "task log b1u8y79d0, same session, same frozen inputs"
+  },
+  "cautious": {
+    "runs": [
+      {
+        "clamp_rate": 0.0,
+        "coverage": 0.0
+      },
+      {
+        "clamp_rate": 0.0,
+        "coverage": 0.0
+      },
+      {
+        "clamp_rate": 0.0,
+        "coverage": 0.0
+      }
+    ],
+    "clamp_mean": 0.0,
+    "clamp_sd": 0.0,
+    "coverage_mean": 0.0,
+    "coverage_sd": 0.0,
+    "source": "task log b1u8y79d0"
+  },
+  "middle": {
+    "runs": [
+      {
+        "run": 1,
+        "clamp": 0,
+        "clamp_rate": 0.0,
+        "coverage": 0.0,
+        "n_covered": 0,
+        "accuracy": null,
+        "ece": null,
+        "raw_counts": {
+          "ESCALATE": 202
+        }
+      },
+      {
+        "run": 2,
+        "clamp": 0,
+        "clamp_rate": 0.0,
+        "coverage": 0.0,
+        "n_covered": 0,
+        "accuracy": null,
+        "ece": null,
+        "raw_counts": {
+          "ESCALATE": 202
+        }
+      },
+      {
+        "run": 3,
+        "clamp": 0,
+        "clamp_rate": 0.0,
+        "coverage": 0.0,
+        "n_covered": 0,
+        "accuracy": null,
+        "ece": null,
+        "raw_counts": {
+          "ESCALATE": 202
+        }
+      }
+    ],
+    "clamp_mean": 0.0,
+    "clamp_sd": 0.0,
+    "coverage_mean": 0.0,
+    "coverage_sd": 0.0
+  },
+  "rule": {
+    "clamp_lt": 0.05,
+    "coverage_gte": 0.5,
+    "passed": false,
+    "predicted": {
+      "clamp": "3-8%",
+      "coverage": "60-70%"
+    }
+  }
+}

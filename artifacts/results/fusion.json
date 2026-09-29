@@ -174,5 +174,45 @@
     "sd": 0.033,
     "range_points": 6.5,
     "implication": "the first run's 24.3% was over-precise. Read as ~21% +/- 3. Temperature 0 reduces variance and does not eliminate it, which is the limitation recorded before the run, measured."
+  },
+  "arbiter_prompt_variants": {
+    "design": "one variable per step; evidence rendering, model, temperature, frozen cases and clamp identical across all three. Three runs each, same batch.",
+    "variants": {
+      "baseline": {
+        "clamp_mean": 0.229,
+        "clamp_sd": 0.003,
+        "coverage_mean": 0.513,
+        "coverage_sd": 0.012
+      },
+      "cautious": {
+        "clamp_mean": 0.0,
+        "clamp_sd": 0.0,
+        "coverage_mean": 0.0,
+        "coverage_sd": 0.0
+      },
+      "middle": {
+        "clamp_mean": 0.0,
+        "clamp_sd": 0.0,
+        "coverage_mean": 0.0,
+        "coverage_sd": 0.0
+      }
+    },
+    "rule": {
+      "clamp_lt": 0.05,
+      "coverage_gte": 0.5,
+      "passed": false,
+      "predicted": {
+        "clamp": "3-8%",
+        "coverage": "60-70%"
+      }
+    },
+    "verdict": "NOT PROMPT-FIXABLE WITH REASONABLE EFFORT on this model. The stopping rule (three variants, declared before the run) fires; there is no fourth.",
+    "finding": "the behaviour is bimodal. Without the cost table it pushes toward FLAKY on ~23% of cases; with it, it escalates on 100% and decides nothing; adding an explicit instruction that blanket escalation is a failure changed nothing at all. One sentence moves it between 'tries to ship defects' and 'does no work', and nothing tried landed in between.",
+    "rule_repair_worked": "extension 2's rule constrained only the clamp rate and a degenerate policy satisfied it. Adding 'AND coverage >= 50%' caught exactly that failure on its first use.",
+    "determinism": {
+      "within_batch_sd": 0.003,
+      "across_session_sd": 0.033,
+      "note": "the variance is between-batch drift, not per-call noise. Variants must be compared within one batch, as these were."
+    }
   }
 }

@@ -139,7 +139,7 @@ def make_openai_client(env=None):
     return OpenAI(api_key=key)
 
 
-def render_arbiter_prompt(records, cautious=False):
+def render_arbiter_prompt(records, cautious=False, floor=False):
     """Every line comes from an Evidence record. No identity, no label, no strategy output."""
     lines = ["You are arbitrating between automated observers about one CI test failure.",
              "", "EVIDENCE RECORD"]
@@ -182,6 +182,15 @@ def render_arbiter_prompt(records, cautious=False):
                   "clearly supports it. When the evidence is thin, split, or points the "
                   "other way,",
                   f"{ESCALATE} -- escalating is cheap and is not a failure."]
+    if floor:
+        # extension 3: the ONLY change from `cautious`. Names blanket escalation as its
+        # own failure, so safety cannot be bought by refusing to decide anything.
+        lines += ["",
+                  "Escalating is cheap, but it is not free, and it is not the safe default.",
+                  "An engineer must then do the work you were asked to do. Escalate only",
+                  "when the surviving evidence genuinely cannot support either call. You",
+                  "should be able to decide most cases; escalating on nearly all of them is",
+                  "a failure of the same kind as guessing."]
     lines += ["",
               "YOU MAY NOT output a probability, explain yourself, or cite anything absent",
               "from the record. Reply with the single word only."]
@@ -198,7 +207,7 @@ def _collapsed_direction(records):
 
 
 def arbiter_decide(records, client, model=ARBITER_MODEL, stats=None,
-                   cautious=False):
+                   cautious=False, floor=False):
     """One case. Returns a category, after the ship-direction clamp.
 
     The clamp is absolute: where collapsed evidence points REAL_DEFECT the arbiter may
@@ -207,7 +216,7 @@ def arbiter_decide(records, client, model=ARBITER_MODEL, stats=None,
     and not only a safety mechanism.
     """
     stats = stats if stats is not None else {}
-    prompt = render_arbiter_prompt(records, cautious=cautious)
+    prompt = render_arbiter_prompt(records, cautious=cautious, floor=floor)
     resp = client.chat.completions.create(
         model=model, temperature=0, max_tokens=8,
         messages=[{"role": "user", "content": prompt}])
@@ -237,13 +246,13 @@ def null_arbiter(records, **_):
 
 
 def strategy_llm_arbiter(records, client=None, model=ARBITER_MODEL, stats=None,
-                         cautious=False, **_):
+                         cautious=False, floor=False, **_):
     """E: hand it to a language model. Raises when no client is configured."""
     if client is None:
         raise RuntimeError(
             "no LLM client configured; this strategy is incomplete and must not be ranked")
     choice = arbiter_decide(records, client, model=model, stats=stats,
-                            cautious=cautious)
+                            cautious=cautious, floor=floor)
     if choice == ESCALATE:
         return None                     # abstain -- reported as coverage, not dropped
     return 1.0 if choice == AGREE_FLAKY else 0.0

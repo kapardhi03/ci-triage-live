@@ -531,3 +531,81 @@ Measured baselines to beat:
 One model, one wording, 202 cases at 49.5% against deployment's 3.16%. A success would show
 that *this* sentence works on *this* model on *these* cases — not that the arbiter is safe,
 and not that the clamp could be removed. The clamp is what makes the measurement possible.
+
+**Appended 2026-09-29 after the middle variant ran. Nothing above this line was edited.**
+
+## The result — three variants, three runs each
+
+| variant | clamp rate | coverage | accuracy |
+|---|---|---|---|
+| **baseline** | **22.9%** (sd 0.3%) | **51.3%** (sd 1.2%) | ~0.990 |
+| **cautious** | **0.0%** (sd 0.0%) | **0.0%** | n/a |
+| **middle** (+ coverage floor) | **0.0%** (sd 0.0%) | **0.0%** | n/a |
+
+```
+RULE  clamp < 5% AND coverage >= 50%   ->   clamp 0.0%, coverage 0.0%   =>  FAIL
+PREDICTED  clamp 3-8%, coverage 60-70%
+```
+
+## The prediction is refuted, on coverage
+
+Predicted **3–8% clamp, 60–70% coverage**. Measured **0.0% and 0.0%** — all three runs, sd
+0.0 on both.
+
+This is outcome 2 from the table fixed in advance: *"clamp < 5% but coverage < 50% →
+collapsed toward the cautious variant. Safety bought by not working."*
+
+**The middle variant is indistinguishable from the cautious one.** The added paragraph —
+naming blanket escalation as *"a failure of the same kind as guessing"* — had **no measurable
+effect whatsoever**. Not a reduced effect. Zero.
+
+## The rule worked this time
+
+Extension 2's rule constrained only the clamp rate, and a policy that never decided anything
+satisfied it. This rule added `AND coverage ≥ 50%`, and **it caught exactly the failure the
+previous one let through.** Same degenerate policy, opposite verdict.
+
+That is the fix working: the instrument was repaired after it failed, and the repair fired on
+its first use.
+
+## What three variants establish
+
+**The behaviour is bimodal, and nothing found the middle.**
+
+- Without the cost table: pushes toward FLAKY on **~23%** of cases, including genuine real
+  defects, stopped only by the clamp.
+- With the cost table: escalates on **100%** of cases and decides nothing.
+- With the cost table *and* an explicit instruction that blanket escalation is a failure:
+  **identical to the cost table alone.**
+
+One sentence of prompt text moves it between "tries to ship defects" and "does no work," and
+nothing tried lands in between.
+
+**The stopping rule fires.** Three variants was declared the limit before the run, so the
+conclusion is the pre-registered one: **not prompt-fixable with reasonable effort on this
+model.** No fourth variant.
+
+## A second measurement, on determinism
+
+Baseline clamp rate, nine runs total:
+
+| context | runs | sd |
+|---|---|---|
+| **within one batch** | 22.8 / 23.3 / 22.8 | **0.3%** |
+| **across sessions** | 24.3 / 17.8 / 21.3 | **3.3%** |
+
+**Within a batch it is nearly deterministic; across sessions it drifts by an order of
+magnitude more.** Extension 2's "~21% ± 3" was right about the spread and wrong about its
+source — the variance is not per-call noise, it is between-batch drift. Any future comparison
+must run its variants **in the same batch**, which this one did.
+
+## What is still not established
+
+- **One model.** `gpt-4o-mini` only. A larger model might hold the middle ground; untested,
+  and the stopping rule means it stays untested here.
+- **Three wordings.** Three points in a very large space. "Not prompt-fixable with reasonable
+  effort" is a statement about effort, not about possibility.
+- **49.5% base rate.** Deployment is 3.16%, where the cost asymmetry that drives the
+  escalate-everything collapse is *stronger*, not weaker.
+- **The clamp is still load-bearing.** Nothing here shows it could be removed. It is what
+  made every one of these measurements possible.

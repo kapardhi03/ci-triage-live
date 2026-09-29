@@ -89,3 +89,25 @@ All kept unedited.
 | a prompt between the two is untested | Nothing tried a middle wording, or a coverage floor stated in the instruction rather than only in the interpretation rule. |
 | single-run LLM numbers here carry ±3 points | Any future arbiter comparison needs repeated runs, not one. |
 | none of it is tested at 3.16% | These 202 cases are 49.5% positive. |
+
+## Extension 3 (2026-09-29): three prompt variants, three runs each
+
+| Was | Now | Statement | Evidence |
+|---|---|---|---|
+| **known-unknown** | **known** | **"bad idea or badly prompted" is settled as far as reasonable effort goes: not prompt-fixable on this model.** The stopping rule (three variants, declared before the run) fired | artifacts/results/arbiter-variants.json |
+| unknown | known | **the behaviour is bimodal**: no cost table → pushes toward FLAKY on **22.9%**; cost table → escalates on **100%**; cost table + explicit anti-blanket-escalation instruction → **identical, 0.0%/0.0%** | artifacts/results/fusion.json |
+| unknown | known | the coverage-floor paragraph had **no measurable effect** — not reduced, zero, across three runs at sd 0.0 | experiments/11-fusion-comparison.md |
+| unknown | known | **one sentence of prompt text moves it between "tries to ship defects" and "does no work"**, and nothing tried landed in between | experiments/11-fusion-comparison.md |
+| unknown | known | the prediction (3–8% clamp, 60–70% coverage) is **refuted on coverage** — measured 0.0% | experiments/11-fusion-comparison.md |
+| assumed | **known** | **the repaired rule worked on first use.** Extension 2's rule constrained only clamp rate and a degenerate policy passed it; adding `AND coverage ≥ 50%` caught exactly that | artifacts/results/fusion.json |
+| assumed | **refined** | LLM variance here is **between-batch drift, not per-call noise**: within one batch sd **0.3%**, across sessions sd **3.3%** | artifacts/results/fusion.json |
+| unknown | known | variants must therefore be compared **within one batch**, as these were | experiments/11-fusion-comparison.md |
+
+### Still open after three variants
+
+| Statement | Why |
+|---|---|
+| one model only | `gpt-4o-mini`. A larger model might hold the middle ground — and the stopping rule means it stays untested here, deliberately. |
+| three wordings in a large space | "Not prompt-fixable with reasonable effort" is a claim about effort, not possibility. |
+| 49.5% base rate, not 3.16% | At deployment's rate the cost asymmetry driving the escalate-everything collapse is **stronger**, not weaker. |
+| the clamp remains load-bearing | Nothing shows it could be removed. It is what made every one of these nine measurements possible. |
