@@ -1,13 +1,19 @@
 # KNOWNS
 
-Assembled from `knowns/00`–`knowns/13`. Every row's evidence column names a file or a
-command; nothing here is asserted without one.
+Assembled from `knowns/00`-`knowns/13` plus the challenge extensions. Every row's
+evidence column names a file or a command; nothing here is asserted without one.
 
-**The known-unknowns table is longer than it is comfortable for it to be. That is the
-point.** A short one would mean the register was dishonest, not that the system was
-understood.
+**The known-unknowns table is longer than it is comfortable for it to be. That is
+the point.** A short one would mean the register was dishonest, not that the system
+was understood.
 
-## What moved (201 rows)
+Regenerate with:
+
+```bash
+uv run python -m ci_triage.assemble_knowns
+```
+
+## What moved (228 rows)
 
 | Phase | Was | Now | Statement | Evidence |
 |---|---|---|---|---|
@@ -181,6 +187,33 @@ understood.
 | 11 | unknown | known | false consensus is detectable and **did not occur** here: 0 cases flagged | artifacts/results/fusion.json |
 | 11 | unknown | known | **E is incomplete and unranked** — no API key, no SDK; predicted position recorded and never checked | artifacts/results/fusion.json |
 | 11 | unknown | known | the rendered arbiter prompt (1,320 chars) contains no label, test name, class name, project, or other strategy output | decisions/11-arbiter-rules.md |
+| 11 | **known-unknown** | **known** | **the LLM arbiter was measured.** `gpt-4o-mini`, temp 0, 202 calls, ~$0.023 | artifacts/results/fusion.json |
+| 11 | unknown | known | it posts **acc 0.9904, ECE 0.0096** — read naively, the best calibration of any completed strategy | artifacts/results/fusion.json |
+| 11 | unknown | known | **it is withdrawn anyway.** Both pre-registered abandonment conditions fired | experiments/11-fusion-comparison.md |
+| 11 | unknown | known | **it ties the null control exactly**: 0.9904 vs 0.9904 on the same 104 covered cases | artifacts/results/fusion.json |
+| 11 | unknown | known | **the ship-direction clamp fired on 49/202 = 24.3%** against a ~5% threshold | artifacts/results/arbiter-responses.json |
+| 11 | unknown | known | **44 of those 49 were genuine real defects** — unclamped, ~1,760 engineer-hours of shipped bugs on 202 cases | artifacts/results/fusion.json |
+| 11 | unknown | known | its raw output distribution is `AGREE_FLAKY` 121 / `ESCALATE` 49 / `AGREE_REAL_DEFECT` 32 — **it wants to say flaky** | artifacts/results/arbiter-responses.json |
+| 11 | unknown | known | **half its reported 51.5% coverage is the guard, not its judgement** — 49 chosen escalations, 49 imposed refusals | artifacts/results/fusion.json |
+| 11 | unknown | known | **no metric on the phase 02 ladder detects this.** The clamp rate is the only instrument that sees it, and it exists only because the rule was written first | ai-ledger/11-fusion-and-arbiter.md |
+| 11 | assumed | **wrong** | the phase 11 inputs were **not** reproducible — they lived only in a scratchpad, contradicting the claim in `.ci-lab/interviews/13.md` | ai-ledger/11-fusion-and-arbiter.md |
+| 11 | unknown | known | `ci_triage/evidence.py` rebuilds them from `data/raw/` and reproduces frozen hash `305d8ece8a0fa240` exactly | ci_triage/evidence.py |
+| 11 | unknown | known | the pre-registered prediction (2nd on accuracy, near-worst on calibration) is **wrong** — and irrelevant, since withdrawal is on safety not rank | experiments/11-fusion-comparison.md |
+| 11 | unknown | known | **the cautious prompt makes the arbiter a constant**: `ESCALATE` 202/202, coverage 0.0%, accuracy and ECE undefined | artifacts/results/fusion.json |
+| 11 | unknown | known | clamp rate **21.3% → 0.0%** — the predicted band was hit **by total abstention** | experiments/11-fusion-comparison.md |
+| 11 | unknown | known | the prediction's **number was right and its verdict was refuted**: nothing was fixed, the component stopped working | experiments/11-fusion-comparison.md |
+| 11 | assumed | **wrong** | the interpretation rule measured only clamp rate with **no coverage floor**, so a degenerate policy satisfied it — the fourth check in this repo passable without the thing it checks being true, written during the phase about that failure mode | experiments/11-fusion-comparison.md |
+| 11 | unknown | known | **the baseline is not stable**: three identical runs give 24.3%, 17.8%, 21.3% — mean 21.1%, sd 3.3, range 6.5 points | artifacts/results/fusion.json |
+| 11 | assumed | **over-precise** | extension 1's headline 24.3% should be read as **~21% ± 3** | artifacts/results/fusion.json |
+| 11 | unknown | known | **both failure modes are reachable from one sentence of prompt text**, and accuracy/ECE cannot tell them apart — excellent for the dangerous variant, undefined for the useless one | experiments/11-fusion-comparison.md |
+| 11 | **known-unknown** | **known** | **"bad idea or badly prompted" is settled as far as reasonable effort goes: not prompt-fixable on this model.** The stopping rule (three variants, declared before the run) fired | artifacts/results/arbiter-variants.json |
+| 11 | unknown | known | **the behaviour is bimodal**: no cost table → pushes toward FLAKY on **22.9%**; cost table → escalates on **100%**; cost table + explicit anti-blanket-escalation instruction → **identical, 0.0%/0.0%** | artifacts/results/fusion.json |
+| 11 | unknown | known | the coverage-floor paragraph had **no measurable effect** — not reduced, zero, across three runs at sd 0.0 | experiments/11-fusion-comparison.md |
+| 11 | unknown | known | **one sentence of prompt text moves it between "tries to ship defects" and "does no work"**, and nothing tried landed in between | experiments/11-fusion-comparison.md |
+| 11 | unknown | known | the prediction (3–8% clamp, 60–70% coverage) is **refuted on coverage** — measured 0.0% | experiments/11-fusion-comparison.md |
+| 11 | assumed | **known** | **the repaired rule worked on first use.** Extension 2's rule constrained only clamp rate and a degenerate policy passed it; adding `AND coverage ≥ 50%` caught exactly that | artifacts/results/fusion.json |
+| 11 | assumed | **refined** | LLM variance here is **between-batch drift, not per-call noise**: within one batch sd **0.3%**, across sessions sd **3.3%** | artifacts/results/fusion.json |
+| 11 | unknown | known | variants must therefore be compared **within one batch**, as these were | experiments/11-fusion-comparison.md |
 | 12 | unknown | known | a 3B model at 16-bit needs **37.47 GiB** to fully fine-tune — weights 5.59, gradients 5.59, **optimiser 22.35**, activations 3.94 | decisions/12-memory-ledger.md |
 | 12 | unknown | known | **the optimiser is the largest line**, 4× the weights; "a 3B model needs ~6 GB" is wrong by 6× before activations | decisions/12-memory-ledger.md |
 | 12 | unknown | known | quantisation attacks **weights only** (5.59→1.40) and does nothing for the optimiser | decisions/12-memory-ledger.md |
@@ -213,7 +246,7 @@ understood.
 | 13 | unknown | known | **KNOWNS.md: 185 established rows, 58 open** | KNOWNS.md |
 | 13 | unknown | known | the explanation layer is now **minimally implemented** — `explain()` fills template slots from `Evidence` and every field traces to a record field | ci_triage/contracts.py, tests/test_invariants.py |
 
-## What remains unknown (66 rows)
+## What remains unknown (78 rows)
 
 | Phase | Statement | Why it is still open |
 |---|---|---|
@@ -269,6 +302,18 @@ understood.
 | 11 | `divergence_threshold = 0.1` was not derived | It sets D's coverage and therefore D's entire measured advantage. Chosen, not justified. |
 | 11 | is the architecture worth keeping? | Three observers were built, three were matched by free alternatives, and fusion adds nothing over one of them. Phase 13 has to answer whether this system should exist in this form. |
 | 11 | no arbiter rule was tested against a live model | The forbidden list is enforced by design and by prompt audit, not by an adversarial attempt to get a model to violate it. |
+| 11 | one model, one prompt, one temperature | A different model, or a prompt arguing harder for caution, might clamp less. Untested. |
+| 11 | the clamp is a wrapper, not a model property | Nothing shows the arbiter *could* be made safe — only that this one, unguarded, was not. |
+| 11 | 49.5% base rate, not deployment's 3.16% | The ship-direction rule matters **more** at 3.16%, but these numbers do not transfer. |
+| 11 | not re-derivable | Temperature 0 and a pinned model reduce variance; they do not guarantee identical output. Stored responses make it auditable, not reproducible. |
+| 11 | **"bad idea or badly prompted" is still unsettled** | Neither prompt yields a usable component: the unsafe one ships defects on ~21% of cases, the safe one does no work. The question the extension was written to answer is not answered. |
+| 11 | a prompt between the two is untested | Nothing tried a middle wording, or a coverage floor stated in the instruction rather than only in the interpretation rule. |
+| 11 | single-run LLM numbers here carry ±3 points | Any future arbiter comparison needs repeated runs, not one. |
+| 11 | none of it is tested at 3.16% | These 202 cases are 49.5% positive. |
+| 11 | one model only | `gpt-4o-mini`. A larger model might hold the middle ground — and the stopping rule means it stays untested here, deliberately. |
+| 11 | three wordings in a large space | "Not prompt-fixable with reasonable effort" is a claim about effort, not possibility. |
+| 11 | 49.5% base rate, not 3.16% | At deployment's rate the cost asymmetry driving the escalate-everything collapse is **stronger**, not weaker. |
+| 11 | the clamp remains load-bearing | Nothing shows it could be removed. It is what made every one of these nine measurements possible. |
 | 12 | **the explanation layer was never built or measured** | `design/12` specifies it in full and nothing implements it. The gate fired on the classification task the SLM would have been distilled for; whether a template-bound explainer helps an engineer at 02:47 is untested. |
 | 12 | **"no fine-tune" is scoped to this corpus** | One project, 19 messages, 202 cases. It does **not** mean SLM distillation never helps for CI explanation. Hundreds of distinct, novel-phrased messages would make generalisation a real task and lower TF-IDF's ceiling. |
 | 12 | token counts are estimated, not counted | `messages.count_tokens` needs credentials this environment lacks. 2.8 ch/tok is conservative, so input prices are upper bounds — but the estimate may be wrong. |
@@ -289,25 +334,36 @@ understood.
 ## The five that matter most to whoever inherits this
 
 1. **`ExecutionTime` may be partially label-derived, and it is the whole tabular observer.**
-   Dropping it takes LOPO AUC 0.6765 → 0.5577. The decisive evidence — whether it was
-   measured on runs including failures — is not in the dataset. Pre-registered in
+   Dropping it takes LOPO AUC 0.6765 -> 0.5577. The decisive evidence -- whether it was
+   measured on runs including failures -- is not in the dataset. Pre-registered in
    `experiments/07-execution-time-leak.md` during phase 04, still open.
 2. **`cause_group` is hand-assigned, and no coupling involving observer 2 was ever
    computed.** `docs/prior-work.md` names the standard remedy (double-fault measure, Q
-   statistic) and records that it was not applied.
+   statistic), computable from outputs already stored, and records that it was not applied.
 3. **The 40/3/1.5 cost numbers are guesses that dominate every result**, and were
    deliberately not revisited, because changing them when the model looks bad is the
-   dishonest move.
+   dishonest move. The arbiter extension showed how much they dominate: put them in a
+   prompt and the model stops deciding anything at all.
 4. **The explanation layer is designed, minimally implemented, and never evaluated.** Its
-   own prediction — that the explanations will be unimpressive, and that sounding smart is
-   the alarm — has never been checked.
+   own prediction -- that explanations will be unimpressive, and that sounding smart is the
+   alarm -- has never been checked.
 5. **Everything after phase 05 rests on three projects, and much of it on one.** The
    dominant signal is a single JVM/SSL incompatibility on the host that produced these
    archives.
 
-## What independent work says about all of it
+## What the system is, stated plainly
 
-arXiv 2607.09345 reports the same four conclusions this repository reached from scratch —
+Three observers were built and **three were matched or beaten by a free alternative** -- a
+constant tied the gradient-boosted tree, a `sum()` beat the GRU, one `if`-statement tied
+MiniLM embeddings, and a stub tied an LLM arbiter. Fusion adds nothing: four strategies
+reduce to one decision rule. The fine-tune was gated out on evidence, not cost. The shipped
+component is a dictionary lookup that abstains on 17.8% of cases.
+
+**The system does not work, and the repository says so in every file.**
+
+## What independent work says about that
+
+arXiv 2607.09345 reports the same four conclusions this repository reached from scratch --
 models matching an always-flaky baseline, collapse under project-disjoint evaluation, data
 leakage in published evaluations, and rerun-based label reconstruction changing the result.
 See `docs/prior-work.md`. The negative results here are most likely correct rather than an
