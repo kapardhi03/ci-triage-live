@@ -13,7 +13,7 @@ Regenerate with:
 uv run python -m ci_triage.assemble_knowns
 ```
 
-## What moved (228 rows)
+## What moved (237 rows)
 
 | Phase | Was | Now | Statement | Evidence |
 |---|---|---|---|---|
@@ -174,6 +174,15 @@ uv run python -m ci_triage.assemble_knowns
 | 10 | unknown | known | a probability without a `calibrated` flag is **refused**, not warned about | tests/test_contracts.py::test_probability_without_the_calibrated_flag_is_refused |
 | 10 | unknown | known | five mutations are killed: de-dup removed, case-level→mean, case-level→majority vote, calibrated flag optional, `NO_EVIDENCE` merged | this session's mutation runs |
 | 10 | unknown | known | **three observers built, three matched or beaten by a free alternative** — the contract is correct machinery around unproven components | ai-ledger/10-architecture-independence.md |
+| 10 | known-unknown | **known** | **the named remedy does not work on this data.** Double-fault and Q were applied to all three pairs and both are degenerate | artifacts/results/coupling.json |
+| 10 | unknown | known | **Q = 1.0000 on all three pairs** — arithmetic, not dependence: `N01 = 0` everywhere, so `N01·N10` vanishes | artifacts/results/coupling.json |
+| 10 | unknown | known | `N01` ("A wrong, B right") is empty because **the weak observer's errors strictly contain the strong ones'** — nesting, which neither measure can express | experiments/14-derived-cause-groups.md |
+| 10 | unknown | known | double-fault is computed from `N00`, which holds **1, 1 and 2 observations** | artifacts/results/coupling.json |
+| 10 | unknown | known | the disagreement measure appeared to **invert** the hand-assignment (`lookup`/`sequence` never disagree on 166 cases) and **fails significance**: expected 2.0 under independence, observed 0, P = 0.135 | artifacts/results/coupling.json |
+| 10 | unknown | known | **all three pairs are indistinguishable from independent** by every measure computable here | artifacts/results/coupling.json |
+| 10 | unknown | known | the derived grouping (**all three merged**) is an artifact and **was not applied** | experiments/14-derived-cause-groups.md |
+| 10 | unknown | known | **the phase 10 input-based measurement had more power than the literature's standard instruments** — it measures inputs, they measure errors, and these observers rarely err | experiments/14-derived-cause-groups.md |
+| 10 | unknown | known | the prediction was refuted in a **fifth way none of the four recorded conditions anticipated**: the instrument is degenerate | experiments/14-derived-cause-groups.md |
 | 11 | unknown | known | **A, B and C emit identical labels on 202/202 cases** — one decision rule, three probability shapes | artifacts/results/fusion.json |
 | 11 | unknown | known | A 0.9554 / B 0.9554 / C 0.9554 accuracy; ECE 0.0435 / 0.0914 / 0.0446 | artifacts/results/fusion.json |
 | 11 | unknown | known | D scores 0.9940 at **82.2% coverage** — and A, B, C all score **0.9940 on those same 166 cases** | artifacts/results/fusion.json |
@@ -246,7 +255,7 @@ uv run python -m ci_triage.assemble_knowns
 | 13 | unknown | known | **KNOWNS.md: 185 established rows, 58 open** | KNOWNS.md |
 | 13 | unknown | known | the explanation layer is now **minimally implemented** — `explain()` fills template slots from `Evidence` and every field traces to a record field | ci_triage/contracts.py, tests/test_invariants.py |
 
-## What remains unknown (78 rows)
+## What remains unknown (82 rows)
 
 | Phase | Statement | Why it is still open |
 |---|---|---|
@@ -296,6 +305,10 @@ uv run python -m ci_triage.assemble_knowns
 | 10 | `credible = 0.5` and `min_coverage = 0.5` are defaults | Neither was derived from the cost table. Phase 11 sets thresholds; these are placeholders that currently decide real outcomes. |
 | 10 | ESCALATE has never fired on real data | The path is tested on synthetic records only. |
 | 10 | the contract is unvalidated end to end | No real observer output has been passed through it. Phase 11 is the first time it carries live evidence. |
+| 10 | **`cause_group` is still hand-assigned** | The remedy was applied and does not work here. The hand-assignment stands by default, not by validation — nothing confirms it and nothing here can refute it. |
+| 10 | observer 2's coupling is still unmeasured **in any usable way** | It was computed; the computation carries no information. |
+| 10 | what would be needed | A corpus where observers are wrong often enough to populate the both-wrong cell — far more cases, or observers nearer 50% accuracy where these measures have power. Neither is available. |
+| 10 | input-based coupling generalises? | The AUC 0.6987 measurement worked where error-based measures failed. Whether input-based coupling detection is generally the better instrument here is untested. |
 | 11 | **the LLM arbiter was never measured** | The central question this phase is named for is unanswered. Not a failure of the experiment — a gap in it, and one no amount of reasoning about the other four strategies fills. |
 | 11 | base rate 0.495 vs deployment 0.0316 | Every number is flattered. D's abstention economics in particular invert at 3.16%, where phase 07 measured abstention as a net loser. |
 | 11 | the case set is one project | 202 tests, ~19 distinct failure messages. The effective sample is far smaller than 202. |

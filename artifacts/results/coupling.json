@@ -1,0 +1,79 @@
+{
+  "threshold_q": 0.5,
+  "frozen_cases": 202,
+  "pairs": {
+    "lookup|sequence": {
+      "n": 166,
+      "n11": 165,
+      "n10": 0,
+      "n01": 0,
+      "n00": 1,
+      "double_fault": 0.006024096385542169,
+      "q": 1.0,
+      "acc_a": 0.9939759036144579,
+      "acc_b": 0.9939759036144579
+    },
+    "lookup|tabular": {
+      "n": 166,
+      "n11": 100,
+      "n10": 65,
+      "n01": 0,
+      "n00": 1,
+      "double_fault": 0.006024096385542169,
+      "q": 1.0,
+      "acc_a": 0.9939759036144579,
+      "acc_b": 0.6024096385542169
+    },
+    "sequence|tabular": {
+      "n": 202,
+      "n11": 102,
+      "n10": 98,
+      "n01": 0,
+      "n00": 2,
+      "double_fault": 0.009900990099009901,
+      "q": 1.0,
+      "acc_a": 0.9900990099009901,
+      "acc_b": 0.504950495049505
+    }
+  },
+  "hand_assigned": [
+    [
+      "lookup",
+      "tabular"
+    ],
+    [
+      "sequence"
+    ]
+  ],
+  "derived": [
+    [
+      "lookup",
+      "sequence",
+      "tabular"
+    ]
+  ],
+  "agree": false,
+  "verdict": "BOTH PRE-REGISTERED INSTRUMENTS DEGENERATE -- derived grouping NOT applied",
+  "why_degenerate": {
+    "q": "N01 = 0 in every pair, so N01*N10 vanishes and Q = 1 by arithmetic regardless of dependence. N01 is 'A wrong, B right'; it is empty because the weak observer's errors strictly contain the strong observers' errors -- nesting, which Q cannot express.",
+    "double_fault": "computed from N00, which holds 1, 1 and 2 observations.",
+    "disagreement_posthoc": "appeared to invert the hand-assignment (lookup/sequence never disagree) but fails significance: expected 2.0 disagreements under independence, observed 0, P(0 | independent) = 0.135."
+  },
+  "significance": {
+    "lookup|sequence": {
+      "expected_disagreements": 2.0,
+      "observed": 0,
+      "p_zero_given_independent": 0.135,
+      "significant": false
+    },
+    "lookup|tabular": {
+      "expected_disagreements": 66.2,
+      "observed": 65
+    },
+    "sequence|tabular": {
+      "expected_disagreements": 100.0,
+      "observed": 98
+    }
+  },
+  "conclusion": "All three pairs are indistinguishable from independent by every measure computable on this data. The derived grouping is an artifact and is not applied; the hand-assigned grouping stands by default rather than by validation. The KNOWNS #2 open item is not closed -- it is better characterised: error-based coupling measures need observers that are wrong, and these are wrong once or twice in 202 cases. The phase 10 input-based measurement (AUC 0.6987, p=1.06e-06) stands and had more power here than the literature's standard instruments."
+}

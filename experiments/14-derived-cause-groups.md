@@ -74,3 +74,90 @@ belief while disagreeing in label, and these measures would not see it.
 ## Result
 
 *(appended after the run — empty at the time of writing)*
+
+**Appended 2026-09-29 after the run. Nothing above this line was edited.**
+
+## The result: both pre-registered instruments are degenerate on this data
+
+| pair | n | acc A | acc B | double-fault | Q |
+|---|---|---|---|---|---|
+| `lookup`/`sequence` | 166 | 0.9940 | 0.9940 | 0.0060 | **1.0000** |
+| `lookup`/`tabular` | 166 | 0.9940 | 0.6024 | 0.0060 | **1.0000** |
+| `sequence`/`tabular` | 202 | 0.9901 | 0.5050 | 0.0099 | **1.0000** |
+
+**Q = 1.0000 on all three pairs, including ones that cannot plausibly be perfectly
+dependent.** That is arithmetic, not dependence:
+
+```
+                  N11   N10   N01   N00
+lookup|sequence   165     0     0     1
+lookup|tabular    100    65     0     1
+sequence|tabular  102    98     0     2
+```
+
+**`N01 = 0` in every pair**, so `N01·N10` vanishes and `Q = (N11·N00)/(N11·N00) = 1`
+regardless of any real relationship. `N01` is *"A wrong, B right"* — it is empty because the
+weak observer's errors strictly **contain** the strong observers' errors. That is nesting,
+which is neither independence nor correlation, and Q cannot express it.
+
+Double-fault fails for the adjacent reason: **`N00` is 1, 1 and 2 observations.** Both
+measures are computed from a cell that has essentially no data.
+
+## The post-hoc diagnosis, and why it also fails
+
+Computed *after* Q was found degenerate — diagnosis, not a substituted test:
+
+| pair | disagreement | correlation |
+|---|---|---|
+| `lookup`/`sequence` | **0.0000** | 1.0000 |
+| `lookup`/`tabular` | 0.3916 | 0.0958 |
+| `sequence`/`tabular` | 0.4851 | 0.1010 |
+
+At first reading this **inverts the hand-assignment**: `lookup` and `sequence` never disagree
+on any of their 166 shared cases, while `tabular` is nearly uncorrelated with both.
+
+**It does not survive a significance check.** Two observers at 99.4% accuracy must agree
+almost always by arithmetic:
+
+```
+lookup|sequence    expected disagreements under INDEPENDENCE: 2.0    observed: 0
+                   P(0 disagreements | independent) = 0.135  -> NOT significant
+
+lookup|tabular     expected 66.2   observed 65
+sequence|tabular   expected 100.0  observed 98
+```
+
+**Every pair's observed disagreement is what independence predicts.** All three are
+indistinguishable from independent by every measure computable here.
+
+## The prediction is refuted, in a fifth way nobody wrote down
+
+Four refutation outcomes were recorded in advance. **None of them happened.** The actual
+outcome was a fifth: *the instrument is degenerate on this data.*
+
+That is the more useful failure, because it is diagnosable. These measures need cases where
+observers are **wrong**, and this corpus supplies one or two.
+
+## What must not be done with this
+
+**The derived grouping is not applied.** It would merge all three observers into one
+`cause_group` on the strength of `Q = 1`, which is an artifact. Applying it would collapse
+fusion to a single voice for an arithmetic reason, and it would look like a finding.
+
+**The hand-assigned grouping stands — by default, not by validation.** Nothing here confirms
+it. Nothing here can refute it either.
+
+## The #2 open item is not closed. It is better characterised.
+
+`KNOWNS.md` said `cause_group` is hand-assigned and the standard remedy was named but not
+applied. It has now been applied, and **the remedy does not work on this data.**
+
+Worth noting what *did* work: the phase 10 coupling (`ExecutionTime` predicts the lookup's
+input at AUC 0.6987, p = 1.06e-06) was measured on **inputs**, not on errors. That
+measurement stands. Error-based agreement measures fail precisely because these observers
+rarely err — so the input-based approach had more power here, and the literature's standard
+instruments had less.
+
+**What would be needed:** a corpus where the observers are wrong often enough to populate the
+both-wrong cell — which means either far more cases, or observers closer to the 50% accuracy
+where these measures have power. Neither is available here.
