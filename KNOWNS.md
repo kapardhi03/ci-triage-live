@@ -13,7 +13,7 @@ Regenerate with:
 uv run python -m ci_triage.assemble_knowns
 ```
 
-## What moved (237 rows)
+## What moved (244 rows)
 
 | Phase | Was | Now | Statement | Evidence |
 |---|---|---|---|---|
@@ -238,6 +238,13 @@ uv run python -m ci_triage.assemble_knowns
 | 12 | assumed | known | **the majority baseline is 0.2474 — worse than chance**, not the 0.4950 raw base rate; grouped splitting on homogeneous test classes makes the training majority mispredict whole folds (one fold scores 0.000) | artifacts/results/distill-corpus.json |
 | 12 | unknown | known | the explanation layer **states the basis, never the belief** — it reports what was observed so the account stays true even when the verdict is wrong | design/12-slm-and-the-ledger.md |
 | 12 | unknown | known | `precomputed/slm-eval.json` **stayed sealed** — the falsifier did not fire, and no number from it appears anywhere in this phase | artifacts/results/slm.json |
+| 12 | **known-unknown** | **known** | **the explanation layer was evaluated.** 202 cases produce **8 distinct shapes**, threshold < 10 — `design/12`'s prediction that the explanations would be unimpressive **holds** | artifacts/results/explanations.json |
+| 12 | unknown | known | two shapes cover **78%**; `voices` is **2 in every case**; `tabular` is suppressed in **166 of 202** | artifacts/results/explanations.json |
+| 12 | assumed | **wrong** | **`THIN` was unreachable.** Keyed on surviving voices, which never fell below 2, so the refusal `design/12` called load-bearing never executed — and the 36 thinnest cases were narrated as `SPLIT` or `CONFIDENT` | experiments/15-explanation-shapes.md |
+| 12 | unknown | known | **the fix created the same defect elsewhere**: firing `THIN` on `NO_EVIDENCE` made `SPLIT` unreachable and discarded disagreement on 34 cases, which the design also forbids | experiments/15-explanation-shapes.md |
+| 12 | unknown | known | **the root cause was the type, not the ordering.** Thinness and disagreement are independent; one enum forces the first-checked branch to shadow the other. Replaced with two booleans | ci_triage/contracts.py, design/12 |
+| 12 | unknown | known | **34 of 202 cases are both thin and split** — the case a single enum could not represent | artifacts/results/explanations.json |
+| 12 | unknown | known | this is the **sixth and seventh** instance of a check that is green while being wrong, and the seventh was introduced while fixing the sixth | experiments/15-explanation-shapes.md |
 | 13 | unknown | known | slices **00, 01, 03, 10 are loud** — they throw, empty or crash, so the failure is its own symptom and needs no instrument | design/13-self-deception-and-handoff.md |
 | 13 | unknown | known | slices **02, 04, 05, 06, 07, 08, 09, 11, 12 are silent** — each keeps emitting a plausible number and needs an invariant | design/13-self-deception-and-handoff.md |
 | 13 | assumed | known | **three silent failures already happened here and none was caught by a passing test** — inverted cost mapping (02, five phases green), circular leak test (04), unsatisfiable criterion (08) | ai-ledger/13-self-deception-and-handoff.md |
@@ -255,7 +262,7 @@ uv run python -m ci_triage.assemble_knowns
 | 13 | unknown | known | **KNOWNS.md: 185 established rows, 58 open** | KNOWNS.md |
 | 13 | unknown | known | the explanation layer is now **minimally implemented** — `explain()` fills template slots from `Evidence` and every field traces to a record field | ci_triage/contracts.py, tests/test_invariants.py |
 
-## What remains unknown (82 rows)
+## What remains unknown (85 rows)
 
 | Phase | Statement | Why it is still open |
 |---|---|---|
@@ -333,6 +340,9 @@ uv run python -m ci_triage.assemble_knowns
 | 12 | the rate table is cached 2026-06-24 | Cited rather than recalled, and it may have drifted. Every price moves with it. |
 | 12 | the prediction that explanations will be unimpressive | `design/12` records it; nothing has generated an explanation to check it against. The stated alarm — explanations that start sounding smart — has never been watched for. |
 | 12 | 19 messages may be an artifact of one machine | The dominant signature is a JVM/SSL incompatibility on the host that produced these archives. A different environment might have a far richer message vocabulary, which would change this phase's conclusion. |
+| 12 | **the measure is weak, and was known to be before the run** | A template-bound explainer cannot generate free text, so "sounding smart" is structurally impossible for it. The alarm was written for a model-backed explainer, which phase 12 gated out. |
+| 12 | usefulness is untested | Shape count measures variety. Whether any of this helps an engineer at 02:47 needs engineers. |
+| 12 | no model-backed explainer exists | `design/12` specified one; phase 12's gate stopped it. The alarm it was written for has never had anything to fire against. |
 | 13 | **the archives are not checksummed** | Zenodo publishes no per-file md5 for the `.tgz` files, so `fetch_archives.sh` verifies only that each is a readable gzip tar. A differing re-download would not be caught. |
 | 13 | **some invariants grade recorded artifacts, not live re-runs** | `test_05` asserts Jaccard 1.000 from `infra.json`. A mis-parse that regenerated the artifact is caught; one that left it stale is not. The full re-run is ~55 s and is not wired in. |
 | 13 | **`cause_group` is still hand-assigned** | The remedy is now named (double-fault, Q statistic) and cheap, and was not applied. No coupling involving observer 2 has ever been computed. |

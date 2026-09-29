@@ -238,14 +238,30 @@ def test_12_every_explanation_field_traces_to_a_record_field():
     assert all(v.startswith("Evidence.") for v in out["trace"].values())
 
 
-def test_12_thin_and_split_evidence_are_flagged_as_such():
+def test_12_thin_and_split_are_independent_fields():
+    """One enum cannot carry two independent properties.
+
+    Keying a single `evidence_level` on surviving voices made THIN unreachable; ordering
+    THIN first made SPLIT unreachable and smoothed away disagreement, which design/12
+    forbids. 34 of the 202 frozen cases are genuinely both. See experiments/15.
+    """
     one_voice = [Evidence("lookup", "T.a", State.OBSERVED, Verdict.FLAKY,
                           frozenset(), "g", probability=1.0, calibrated=False)]
-    assert explain(one_voice, Verdict.FLAKY)["evidence_level"] == "THIN"
+    e = explain(one_voice, Verdict.FLAKY)
+    assert e["thin"] is True and e["split"] is False
 
-    split = one_voice + [Evidence("seq", "T.a", State.OBSERVED, Verdict.FLAKY,
-                                  frozenset(), "h", probability=0.0, calibrated=False)]
-    assert explain(split, Verdict.FLAKY)["evidence_level"] == "SPLIT"
+    disagree = [Evidence("a", "T.a", State.OBSERVED, Verdict.FLAKY, frozenset(), "g",
+                         probability=1.0, calibrated=False),
+                Evidence("b", "T.a", State.OBSERVED, Verdict.FLAKY, frozenset(), "h",
+                         probability=0.0, calibrated=False)]
+    e = explain(disagree, Verdict.FLAKY)
+    assert e["thin"] is False and e["split"] is True
+
+    # both at once -- the case a single enum cannot report
+    both = disagree + [Evidence("c", "T.a", State.NO_EVIDENCE, Verdict.ABSTAIN,
+                                frozenset(), "i")]
+    e = explain(both, Verdict.FLAKY)
+    assert e["thin"] is True and e["split"] is True, "one property shadowed the other"
 
 
 def test_12_explanation_never_asserts_the_verdict():

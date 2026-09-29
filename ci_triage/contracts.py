@@ -190,14 +190,14 @@ def explain(records, verdict, probability=None):
 
     spread = (max(r.probability for r in collapsed) - min(r.probability for r in collapsed)
               if len(collapsed) > 1 else 0.0)
-    if not collapsed or no_ev and not usable:
-        level = "THIN"
-    elif spread > 0.4:
-        level = "SPLIT"
-    elif len(collapsed) < 2:
-        level = "THIN"
-    else:
-        level = "CONFIDENT"
+    # Thinness and disagreement are INDEPENDENT properties, so they get a field each.
+    # A single enum cannot carry both: whichever branch is checked first shadows the
+    # other, and 34 of these 202 cases are genuinely both. The first version keyed only
+    # on surviving voices and made `thin` unreachable; ordering `thin` first instead made
+    # `split` unreachable and smoothed away disagreement, which design/12 forbids.
+    # See experiments/15-explanation-shapes.md.
+    thin = bool(not collapsed or len(collapsed) < 2 or no_ev)
+    split = bool(spread > 0.4)
 
     out = {
         "basis": basis.observer if basis else None,
@@ -213,13 +213,14 @@ def explain(records, verdict, probability=None):
         "suppressed": suppressed,
         "inert": sorted(inert),
         "no_evidence": sorted(r.observer for r in no_ev),
-        "evidence_level": level,
+        "thin": thin,
+        "split": split,
     }
     # trace: every emitted field -> the record field it came from
     out["trace"] = {k: "Evidence." + v for k, v in {
         "basis": "observer", "basis_probability": "probability", "calibrated": "calibrated",
         "corroborated_by": "observer", "contradicted_by": "observer",
         "voices": "cause_group", "suppressed": "cause_group", "inert": "probability",
-        "no_evidence": "state", "evidence_level": "state+probability",
+        "no_evidence": "state", "thin": "state", "split": "probability",
     }.items()}
     return out

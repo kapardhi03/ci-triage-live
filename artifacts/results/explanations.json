@@ -1,0 +1,169 @@
+{
+  "n_cases": 202,
+  "n_distinct_shapes": 8,
+  "threshold": 10,
+  "verdict": "HOLDS",
+  "history": {
+    "enum_voices_only": {
+      "shapes": 8,
+      "unreachable": "THIN"
+    },
+    "enum_thin_first": {
+      "shapes": 7,
+      "unreachable": "SPLIT"
+    },
+    "two_booleans": {
+      "shapes": 8,
+      "unreachable": null
+    }
+  },
+  "thin_split_combinations": {
+    "thin=False,split=False": 166,
+    "thin=True,split=False": 2,
+    "thin=True,split=True": 34
+  },
+  "basis_observer": {
+    "sequence": 96,
+    "lookup": 98,
+    "tabular": 8
+  },
+  "suppressed_cases": 166,
+  "shapes": [
+    {
+      "count": 95,
+      "basis": "lookup",
+      "calibrated": false,
+      "corroborated_by": [
+        "sequence"
+      ],
+      "contradicted_by": [],
+      "voices": 2,
+      "suppressed": [
+        "tabular"
+      ],
+      "inert": [],
+      "no_evidence": [],
+      "thin": false,
+      "split": false
+    },
+    {
+      "count": 63,
+      "basis": "sequence",
+      "calibrated": false,
+      "corroborated_by": [
+        "lookup"
+      ],
+      "contradicted_by": [],
+      "voices": 2,
+      "suppressed": [
+        "tabular"
+      ],
+      "inert": [],
+      "no_evidence": [],
+      "thin": false,
+      "split": false
+    },
+    {
+      "count": 26,
+      "basis": "sequence",
+      "calibrated": false,
+      "corroborated_by": [],
+      "contradicted_by": [
+        "tabular"
+      ],
+      "voices": 2,
+      "suppressed": [],
+      "inert": [],
+      "no_evidence": [
+        "lookup"
+      ],
+      "thin": true,
+      "split": true
+    },
+    {
+      "count": 8,
+      "basis": "tabular",
+      "calibrated": true,
+      "corroborated_by": [],
+      "contradicted_by": [
+        "sequence"
+      ],
+      "voices": 2,
+      "suppressed": [],
+      "inert": [],
+      "no_evidence": [
+        "lookup"
+      ],
+      "thin": true,
+      "split": true
+    },
+    {
+      "count": 5,
+      "basis": "sequence",
+      "calibrated": false,
+      "corroborated_by": [
+        "tabular"
+      ],
+      "contradicted_by": [],
+      "voices": 2,
+      "suppressed": [
+        "lookup"
+      ],
+      "inert": [],
+      "no_evidence": [],
+      "thin": false,
+      "split": false
+    },
+    {
+      "count": 3,
+      "basis": "lookup",
+      "calibrated": false,
+      "corroborated_by": [],
+      "contradicted_by": [
+        "sequence"
+      ],
+      "voices": 2,
+      "suppressed": [
+        "tabular"
+      ],
+      "inert": [],
+      "no_evidence": [],
+      "thin": false,
+      "split": false
+    },
+    {
+      "count": 1,
+      "basis": "sequence",
+      "calibrated": false,
+      "corroborated_by": [
+        "tabular"
+      ],
+      "contradicted_by": [],
+      "voices": 2,
+      "suppressed": [],
+      "inert": [],
+      "no_evidence": [
+        "lookup"
+      ],
+      "thin": true,
+      "split": false
+    },
+    {
+      "count": 1,
+      "basis": "sequence",
+      "calibrated": false,
+      "corroborated_by": [],
+      "contradicted_by": [
+        "tabular"
+      ],
+      "voices": 2,
+      "suppressed": [],
+      "inert": [],
+      "no_evidence": [
+        "lookup"
+      ],
+      "thin": true,
+      "split": false
+    }
+  ]
+}

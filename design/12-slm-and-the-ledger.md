@@ -32,7 +32,8 @@ sentences composed at will:
   voices:         how many opinions counted after de-duplication
   suppressed:     observers dropped as correlated, and their cause_group
   inert:          observers that never crossed threshold
-  evidence_level: CONFIDENT | THIN | SPLIT
+  thin:           an observer had nothing to say, or fewer than two voices survived
+  split:          the surviving voices disagree sharply
   trace:          every emitted claim -> the record field it came from
 }
 ```
@@ -61,12 +62,18 @@ decide the machine over-read it.
 **It refuses to hide thin evidence.** A covered case says *matched a known signature*; an
 uncovered case must say *no observer had a confident signal — this is a low-evidence
 verdict*. Thin evidence is narrated as thin. A system that explains its confident hits and
-its coin-flips in the same fluent register is the dangerous one, so `evidence_level` forces
-them to read differently.
+its coin-flips in the same fluent register is the dangerous one, so `thin` forces them to read
+differently.
 
 **It refuses to smooth disagreement.** Where observers split, the split is shown, not
 resolved into a unanimous-sounding story. Contradiction is information the human needs
 exactly when the verdict is shakiest.
+
+**Thinness and disagreement are reported as independent fields, not as one level.** A case
+can be neither, either, or both -- 34 of the 202 frozen cases are both -- and a single enum
+forces whichever is checked first to shadow the other. Two booleans, because the properties
+are two. Recorded after an enum was tried and each ordering of it silently disabled one of
+the two refusals above (`experiments/15-explanation-shapes.md`).
 
 **It refuses any claim absent from the record.** Every statement maps to a field, so a
 reviewer can audit the explanation against the machine state that produced it. That is what
