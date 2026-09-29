@@ -125,43 +125,12 @@
     "temperature": 0,
     "checked": true,
     "ranked": true,
-    "clamp_fired": 49,
-    "clamp_rate": 0.24257425742574257,
+    "clamp_fired": 44,
+    "clamp_rate": 0.21782178217821782,
     "unparseable": 0,
     "responses": "artifacts/results/arbiter-responses.json",
     "predicted_position": "2nd on accuracy, near-worst on calibration",
-    "reproducibility": "an LLM has no seed guarantee; temperature 0, model string pinned, every raw response stored. Auditable, not re-derivable.",
-    "verdict": "WITHDRAWN",
-    "abandonment_conditions_fired": [
-      "1 - ties the null control: 0.9904 vs 0.9904 on the same 104 covered cases, identical",
-      "3 - ship-direction clamp fired on 24.3% of cases against a ~5% threshold"
-    ],
-    "clamp_analysis": {
-      "clamp_fired": 49,
-      "clamp_rate": 0.2426,
-      "threshold": 0.05,
-      "of_those_clamped_real_defects": 44,
-      "of_those_clamped_flaky": 5,
-      "unclamped_cost_hours": 1760,
-      "note": "unclamped, the arbiter would have called 44 real defects flaky. At the phase 01 price of ~40h per shipped defect that is 1,760 engineer-hours on 202 cases. The only thing preventing it was a guard the model did not know existed."
-    },
-    "coverage_analysis": {
-      "reported_coverage": 0.5149,
-      "decided_by_model": 104,
-      "escalated_by_model": 49,
-      "abstained_via_clamp": 49,
-      "note": "half the abstention is the guard, not the model's judgement. Reported coverage overstates how often the arbiter chose to decline."
-    },
-    "raw_response_distribution": {
-      "AGREE_FLAKY": 121,
-      "ESCALATE": 49,
-      "AGREE_REAL_DEFECT": 32
-    },
-    "prediction_check": {
-      "predicted": "2nd on accuracy, near-worst on calibration",
-      "actual_headline": "would rank 1st on BOTH (acc 0.9904, ECE 0.0096) if read naively",
-      "verdict": "prediction wrong, and the error does not matter -- the strategy is withdrawn on safety grounds, not on rank"
-    }
+    "reproducibility": "an LLM has no seed guarantee; temperature 0, model string pinned, every raw response stored. Auditable, not re-derivable."
   },
   "conclusion": "Fusion adds nothing, and the arbiter is withdrawn. A, B and C emit identical labels on all 202 cases; D reproduces phase 09's MessageLookup. The LLM arbiter, run at last on gpt-4o-mini, posts the best headline numbers in the table (acc 0.9904, ECE 0.0096) and is withdrawn anyway: on its own covered cases it ties a free stub exactly (0.9904), and it tried to move 49 of 202 cases toward FLAKY against REAL_DEFECT evidence -- 44 of them genuine real defects, 1,760 engineer-hours of shipped bugs, stopped only by a guard it could not see."
 }

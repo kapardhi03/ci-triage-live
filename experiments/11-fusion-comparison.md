@@ -339,3 +339,54 @@ uv run pytest tests/test_fusion.py -q      # the clamp invariant, no network
 - **Non-reproducible by construction.** Temperature 0 and a pinned model string reduce
   variance; they do not guarantee identical output. The stored responses make the run
   auditable, not re-derivable.
+
+---
+
+# Extension 2: does the clamp rate survive a cautious prompt?
+
+**Written 2026-09-29, before the variant ran.** One variable.
+
+## The question this settles
+
+Extension 1 left it open: *"Does the 24.3% clamp rate drop with a prompt that argues for
+caution, or is it a property of the model?"* It decides whether "LLM arbiter" is a **bad
+idea** or a **badly-prompted one**, and the first run cannot tell them apart.
+
+## The one variable
+
+Identical: the evidence-record rendering byte for byte, the `cause_group` note,
+`gpt-4o-mini`, temperature 0, `max_tokens` 8, the same 202 frozen cases
+(`305d8ece8a0fa240`), and the clamp and how it is counted.
+
+Changed: the instruction block now carries the phase 01 cost table and names `AGREE_FLAKY`
+as the expensive error — ~40h against ~3h and ~1.5h, roughly 13× and 27× — and tells the
+model that escalating is cheap and is not a failure.
+
+Nothing else. Cost ≈ $0.03.
+
+## The prediction
+
+**Clamp rate falls below 5%.**
+
+Reasoning: the baseline prompt never told the model that `AGREE_FLAKY` is the expensive
+error. It was choosing between three words with no stated consequences. Given the costs
+explicitly, it should become appropriately cautious.
+
+**If it holds:** the verdict is *badly-prompted, not a bad idea* — and the arbiter is worth
+a second look with the cost table baked in, rather than withdrawn outright.
+
+## What each outcome means, fixed in advance
+
+| measured clamp rate | verdict |
+|---|---|
+| **< 5%** | prompting fixes it. The tendency was an instruction gap, not a model property. |
+| 5–15% | partly instructable, partly intrinsic. The clamp stays mandatory either way. |
+| 15–25% | the pull toward FLAKY survives being told it is 13× costlier — a model property. "Bad idea", not "badly prompted". |
+| > 25% | naming the costs made it **worse**. Least expected, most interesting. |
+
+## What it still will not prove
+
+One model, one cautious phrasing, one temperature. A drop would show *this* wording helps on
+*this* model — not that the arbiter is safe, and not that the clamp could be removed. The
+clamp is what makes the measurement possible; it is not a result about whether the clamp is
+needed.
